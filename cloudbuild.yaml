@@ -1,6 +1,6 @@
 steps:
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '--builder', 'default', '--platform', 'linux/amd64', '-t', 'us-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$IMAGE_NAME:$SHORT_SHA', '.']
+  args: ['buildx', '--builder', 'default', '--platform', 'linux/amd64', '-t', 'us-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$IMAGE_NAME:$SHORT_SHA', '.']
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'us-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$IMAGE_NAME:$SHORT_SHA']
 - name: 'gcr.io/google-cloud-sdk'
