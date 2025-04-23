@@ -1,0 +1,102 @@
+﻿@page
+@model JobScraper.Pages.IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Job Listings</h1>
+    <button id="updateButton">Update Table</button>
+
+    <div>
+        <input type="search" name="searchInput" placeholder="Search..." size="30" required>
+        <button id="searchButton">Search</button>
+    </div>
+
+    <div style="max-height: 500px; overflow-y: auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Job Title</th>
+                    <th>Company</th>
+                    <th>Location</th>
+                    <th>Wage</th>
+                    <th>Link</th>
+                </tr>
+            </thead>
+            <tbody itemid="tableBody" id="tableBody">
+                @foreach (var job in Model.Jobs)
+                {
+                    <tr>
+                        <td>@job.Title</td>
+                        <td>@job.Company</td>
+                        <td>@job.Location</td>
+                        <td>@job.Wage</td>
+                        <td><a href="@job.Url">View Job</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    
+</div>
+
+@section Scripts {
+    <script>
+        
+        document.getElementById("updateButton").addEventListener("click", async function() {
+            const tableBody = document.getElementById("tableBody");
+            tableBody.innerHTML = '<tr><td colspan="5">Loading...</td></tr>'; // Show loading
+            
+            try {
+                const response = await fetch('/Index?handler=UpdateTable'); // Server endpoint
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const updatedData = await response.json();
+                console.log(updatedData); // Debugging line to check the data
+                tableBody.innerHTML = ''; // Clear loading or previous data
+
+                updatedData.forEach(item => {
+                    const row = tableBody.insertRow();
+                    const titleCell = row.insertCell();
+                    const companyCell = row.insertCell();
+                    const locationCell = row.insertCell();
+                    const wageCell = row.insertCell();
+                    const urlCell = row.insertCell();
+                    titleCell.textContent = item.title;
+                    companyCell.textContent = item.company;
+                    locationCell.textContent = item.location;
+                    wageCell.textContent = item.wage;
+                    urlCell.innerHTML = '<a href="' + item.url + '">View Job</a>';
+                });
+
+            } catch (error) {
+                console.error('Error fetching updated data:', error);
+                tableBody.innerHTML = '<tr><td colspan="5">Error loading data</td></tr>';
+            }
+        });
+        
+    </script>
+
+    <script>
+        document.getElementById("searchButton").addEventListener("click", function() {
+            const input = document.querySelector('input[name="searchInput"]');
+            const filter = input.value.toLowerCase();
+            const tableBody = document.getElementById("tableBody");
+            const rows = tableBody.getElementsByTagName("tr");
+
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName("td");
+                let found = false;
+                for (let j = 0; j < cells.length; j++) {
+                    if (cells[j].textContent.toLowerCase().includes(filter)) {
+                        found = true;
+                        break;
+                    }
+                }
+                rows[i].style.display = found ? "" : "none";
+            }
+        });
+    </script>
+}
