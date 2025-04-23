@@ -9,7 +9,6 @@ public abstract class Program
         //await Model.ListScraper.Scrape();
 
         var builder = WebApplication.CreateBuilder(args);
-
         // Add services to the container.
         builder.Services.AddRazorPages();
 
@@ -29,9 +28,9 @@ public abstract class Program
 
         app.UseAuthorization();
 
-        app.MapStaticAssets();
-        app.MapRazorPages()
-            .WithStaticAssets();
+        //app.MapStaticAssets();
+        app.MapRazorPages();
+            //.WithStaticAssets();
 
         app.Run();
     }
