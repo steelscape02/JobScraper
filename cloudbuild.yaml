@@ -1,0 +1,7 @@
+steps:
+  - name: 'Build job report'
+    image: 'jobscrpaer:latest'
+    env:
+      - 'DOCKER_BUILDKIT=1'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/my-image:$SHORT_SHA', '.']
+images: ['gcr.io/$PROJECT_ID/my-image:$SHORT_SHA']
