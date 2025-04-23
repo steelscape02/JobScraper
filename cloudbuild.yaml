@@ -1,6 +1,0 @@
-steps:
-  - name: 'gcr.io/k8s-skaffold/pack'
-    args:
-      - build
-      - '--builder=gcr.io/buildpacks/builder:v1'
-      - '--tag=gcr.io/$PROJECT_ID/YOUR_IMAGE_NAME:$SHORT_SHA'
