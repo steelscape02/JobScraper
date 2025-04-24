@@ -16,7 +16,7 @@ public abstract class Program
         {
             options.ListenAnyIP(Int32.Parse(port)); // Listen on 0.0.0.0
         });
-        
+
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
@@ -27,7 +27,7 @@ public abstract class Program
             app.UseHsts();
         }
         
-
+        app.UseStaticFiles();
         app.UseHttpsRedirection();
 
         app.UseRouting();
