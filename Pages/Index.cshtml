@@ -8,9 +8,15 @@
     <h1 class="display-4">Job Listings</h1>
     <button id="updateButton">Update Table</button>
 
-    <div>
+    <div aria-orientation="horizontal" style="margin: 20px 0;">
         <input type="search" name="searchInput" placeholder="Search..." size="30" required>
         <button id="searchButton">Search</button>
+        <div aria-orientation="vertical" style="margin: 20px 0;">
+            <label for="dateFilter">Date Filter:</label>
+            <input type="date" name="myInput" value="2025-04-24">
+            <label for="wageFilter">Wage Filter:</label>
+            <input type="range" name="wageFilter" step="1" value="1" min="0" max="100" required>
+        </div>
     </div>
 
     <div style="max-height: 500px; overflow-y: auto;">
