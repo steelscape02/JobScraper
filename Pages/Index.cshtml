@@ -8,14 +8,16 @@
     <h1 class="display-4">Job Listings</h1>
     <button id="updateButton">Update Table</button>
 
-    <div aria-orientation="horizontal" style="margin: 20px 0;">
+    <div style="margin: 20px 0;">
         <input type="search" name="searchInput" placeholder="Search..." size="30" required>
         <button id="searchButton">Search</button>
-        <div aria-orientation="vertical" style="margin: 20px 0;">
+        <div style="margin: 20px 0; vertical-align: middle;">
             <label for="dateFilter">Date Filter:</label>
-            <input type="date" name="myInput" value="2025-04-24">
+            <input type="date" name="dateFilter" value="2025-04-24">
+            
             <label for="wageFilter">Wage Filter:</label>
             <input type="range" name="wageFilter" step="1" value="1" min="0" max="100" required>
+            <span id="wageValue">1</span>
         </div>
     </div>
 
@@ -27,6 +29,7 @@
                     <th>Company</th>
                     <th>Location</th>
                     <th>Wage</th>
+                    <th>Date Posted</th>
                     <th>Link</th>
                 </tr>
             </thead>
@@ -38,6 +41,7 @@
                         <td>@job.Company</td>
                         <td>@job.Location</td>
                         <td>@job.Wage</td>
+                        <td>@job.PostedOn</td>
                         <td><a href="@job.Url">View Job</a></td>
                     </tr>
                 }
@@ -69,11 +73,13 @@
                     const companyCell = row.insertCell();
                     const locationCell = row.insertCell();
                     const wageCell = row.insertCell();
+                    const dateCell = row.insertCell();
                     const urlCell = row.insertCell();
                     titleCell.textContent = item.title;
                     companyCell.textContent = item.company;
                     locationCell.textContent = item.location;
                     wageCell.textContent = item.wage;
+                    dateCell.textContent = item.postedOn;
                     urlCell.innerHTML = '<a href="' + item.url + '">View Job</a>';
                 });
 
@@ -104,5 +110,48 @@
                 rows[i].style.display = found ? "" : "none";
             }
         });
+    </script>
+
+    <script>
+        const wageSlider = document.querySelector('input[name="wageFilter"]');
+        const wageValue = document.getElementById("wageValue");
+
+        wageSlider.addEventListener("input", function() {
+            wageValue.textContent = wageSlider.value;
+        });
+    </script>
+
+    <script>
+        const dateInput = document.querySelector('input[name="dateFilter"]');
+        dateInput.addEventListener("change", function() {
+            const selectedDate = new Date(dateInput.value);
+            const tableBody = document.getElementById("tableBody");
+            const rows = tableBody.getElementsByTagName("tr");
+
+            for (let i = 0; i < rows.length; i++) {
+                const dateCell = rows[i].getElementsByTagName("td")[4]; // Assuming the date is in the 5th column
+                const rowDate = new Date(dateCell.textContent);
+                rows[i].style.display = rowDate >= selectedDate ? "" : "none";
+            }
+        });
+    </script>
+
+    <script>
+        const wageInput = document.querySelector('input[name="wageFilter"]');
+        wageInput.addEventListener("input", function() {
+            const selectedWage = parseInt(wageInput.value, 10);
+            const tableBody = document.getElementById("tableBody");
+            const rows = tableBody.getElementsByTagName("tr");
+
+            for (let i = 0; i < rows.length; i++) {
+                const wageCell = rows[i].getElementsByTagName("td")[3]; // Assuming the wage is in the 4th column
+                const rowWage = parseInt(wageCell.textContent, 10);
+                rows[i].style.display = rowWage >= selectedWage ? "" : "none";
+            }
+        });
+    </script>
+
+    <script>
+        
     </script>
 }
