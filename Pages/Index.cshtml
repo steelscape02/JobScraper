@@ -12,12 +12,12 @@
         <input type="search" name="searchInput" placeholder="Search..." size="30" required>
         <button id="searchButton">Search</button>
         <div style="margin: 20px 0; vertical-align: middle;">
-            <label for="dateFilter">Date Filter:</label>
-            <input type="date" name="dateFilter" value="2025-04-24">
-            
-            <label for="wageFilter">Wage Filter:</label>
-            <input type="range" name="wageFilter" step="1" value="1" min="0" max="100" required>
-            <span id="wageValue">1</span>
+            <label for="dateFilter">Oldest posted:</label>
+            <input type="date" name="dateFilter" id="dateFilter" value="@DateTime.Now.AddMonths(-3).ToString("yyyy-MM-dd")" required>
+
+            <label for="wageFilter">Minimum wage:</label>
+            <input type="range" name="wageFilter" id="wageFilter" step="1" value="1" min="0" max="1" required>
+            <span id="wageValue">$1 / hr</span>
         </div>
     </div>
 
@@ -53,10 +53,30 @@
 
 @section Scripts {
     <script>
-        
+        function findAllNumbers(input) {
+            if (!input || input.trim() === "") {
+                return [];
+            }
+
+            // Remove commas and then find all sequences of one or more digits
+            const numberStrings = input.replace(/,/g, "").match(/\d+/g);
+
+            if (!numberStrings) {
+                return []; // Return an empty array if no numbers are found
+            }
+
+            // Convert the matched strings to integers
+            return numberStrings.map(str => parseInt(str, 10));
+        }
+
+        function findMaxNumber(input) {
+            const numbers = findAllNumbers(input);
+            return numbers.length > 0 ? Math.max(...numbers) : null;
+        }
+
         document.getElementById("updateButton").addEventListener("click", async function() {
             const tableBody = document.getElementById("tableBody");
-            tableBody.innerHTML = '<tr><td colspan="5">Loading...</td></tr>'; // Show loading
+            tableBody.innerHTML = '<tr><td colspan="6">Loading...</td></tr>'; // Show loading
             
             try {
                 const response = await fetch('/Index?handler=UpdateTable'); // Server endpoint
@@ -64,8 +84,8 @@
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const updatedData = await response.json();
-                console.log(updatedData); // Debugging line to check the data
                 tableBody.innerHTML = ''; // Clear loading or previous data
+               
 
                 updatedData.forEach(item => {
                     const row = tableBody.insertRow();
@@ -81,12 +101,21 @@
                     wageCell.textContent = item.wage;
                     dateCell.textContent = item.postedOn;
                     urlCell.innerHTML = '<a href="' + item.url + '">View Job</a>';
+                    if (item.wage) {
+                        var maxNum = findMaxNumber(item.wage); // Find the maximum number in the wage string
+                        if (maxNum > wageFilter.max) {
+                            console.log("Updating max wage filter to: " + maxNum + " for job at " + item.url);
+                            console.log("Current max wage filter: " + wageFilter.max);
+                            wageFilter.max = maxNum; // Update max value for wage filter
+                        }
+                    }
                 });
-
+                //wageFilter.max = updatedData.reduce((max, job) => Math.max(max, parseInt(job.wage.replace(/[^0-9]/g, ''))), 0); // Update max value for wage filter
             } catch (error) {
                 console.error('Error fetching updated data:', error);
-                tableBody.innerHTML = '<tr><td colspan="5">Error loading data</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="6">Error loading data</td></tr>';
             }
+
         });
         
     </script>
@@ -117,7 +146,7 @@
         const wageValue = document.getElementById("wageValue");
 
         wageSlider.addEventListener("input", function() {
-            wageValue.textContent = wageSlider.value;
+            wageValue.textContent = `$${wageSlider.value} / hr`;
         });
     </script>
 
@@ -145,13 +174,9 @@
 
             for (let i = 0; i < rows.length; i++) {
                 const wageCell = rows[i].getElementsByTagName("td")[3]; // Assuming the wage is in the 4th column
-                const rowWage = parseInt(wageCell.textContent, 10);
+                const rowWage = findMaxNumber(wageCell.textContent); // Find the maximum number in the wage string
                 rows[i].style.display = rowWage >= selectedWage ? "" : "none";
             }
         });
-    </script>
-
-    <script>
-        
     </script>
 }

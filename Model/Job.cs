@@ -23,6 +23,7 @@ public class Job(string url)
     public override string ToString()
     {
         var summary = $"Title: {Title}\n";
+        if (!string.IsNullOrEmpty(Url)) summary += $"URL: {Url}\n";
         if (!string.IsNullOrEmpty(Description)) summary += $"Description: {Description}\n";
         if (!string.IsNullOrEmpty(Requirements)) summary += $"Requirements: {Requirements}\n";
         if (!string.IsNullOrEmpty(Contact)) summary += $"Contact: {Contact}\n";
