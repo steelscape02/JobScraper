@@ -42,7 +42,7 @@
                         <td>@job.Location</td>
                         <td>@job.Wage</td>
                         <td>@job.PostedOn</td>
-                        <td><a href="@job.Url">View Job</a></td>
+                        <td><a href="@job.Url" target="_blank">View Job</a></td>
                     </tr>
                 }
             </tbody>
@@ -100,7 +100,7 @@
                     locationCell.textContent = item.location;
                     wageCell.textContent = item.wage;
                     dateCell.textContent = item.postedOn;
-                    urlCell.innerHTML = '<a href="' + item.url + '">View Job</a>';
+                    urlCell.innerHTML = '<a href="' + item.url + '" target="_blank">View Job</a>';
                     if (item.wage) {
                         var maxNum = findMaxNumber(item.wage); // Find the maximum number in the wage string
                         if (maxNum > wageFilter.max) {
