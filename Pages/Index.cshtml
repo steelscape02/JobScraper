@@ -118,7 +118,6 @@
             const rows = tableBody.getElementsByTagName("tr");
             
             for (let i = 0; i < rows.length; i++) {
-                console.log("Row date: ", rows[i].getElementsByTagName("td")[4].textContent); // Debugging line
                 const dateCell = rows[i].getElementsByTagName("td")[4]; // Assuming the date is in the 5th column
                 const rowDate = new Date(dateCell.textContent);
                 rows[i].style.display = rowDate >= selectedDate ? "" : "none";
