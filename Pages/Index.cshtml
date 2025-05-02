@@ -159,13 +159,7 @@
         
         dateInput.addEventListener("change", function() {
             const selectedDate = new Date(dateInput.value);
-            const tableBody = document.getElementById("tableBody");
-            const rows = tableBody.getElementsByTagName("tr");
-            for (let i = 0; i < rows.length; i++) {
-                const dateCell = rows[i].getElementsByTagName("td")[4]; // Assuming the date is in the 5th column
-                const rowDate = new Date(dateCell.textContent);
-                rows[i].style.display = rowDate >= selectedDate ? "" : "none";
-            }
+            filterByDate(selectedDate,rows);
         });
         
         wageChange.addEventListener("input", function() {
@@ -173,8 +167,6 @@
             // add date filter
             const selectedDate = new Date(dateInput.value);
             const selectedWage = parseInt(wageChange.value, 10);
-            const tableBody = document.getElementById("tableBody");
-            const rows = tableBody.getElementsByTagName("tr");
 
             for (let i = 0; i < rows.length; i++) {
                 const wageCell = rows[i].getElementsByTagName("td")[3]; // Assuming the wage is in the 4th column
