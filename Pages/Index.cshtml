@@ -53,6 +53,12 @@
 
 @section Scripts {
     <script>
+        const dateInput = document.querySelector('input[name="dateFilter"]');
+        const wageInput = document.querySelector('input[name="wageFilter"]');
+        const wageValue = document.getElementById("wageValue");
+        const tableBody = document.getElementById("tableBody");
+        const rows = tableBody.getElementsByTagName("tr");
+
         function findAllNumbers(input) {
             if (!input || input.trim() === "") {
                 return [];
@@ -74,8 +80,20 @@
             return numbers.length > 0 ? Math.max(...numbers) : null;
         }
 
+        function filterByDate(selectedDate,rows) {
+            for (let i = 0; i < rows.length; i++) {
+                const dateCell = rows[i].getElementsByTagName("td")[4]; // Assuming the date is in the 5th column
+                const rowDate = new Date(dateCell.textContent);
+                rows[i].style.display = rowDate >= selectedDate ? "" : "none";
+            }
+        }
+
+        document.onload = function() {
+            tableBody.innerHTML = '<tr><td colspan="6">""</td></tr>'; // Show loading
+        };
+
         document.getElementById("updateButton").addEventListener("click", async function() {
-            const tableBody = document.getElementById("tableBody");
+            
             tableBody.innerHTML = '<tr><td colspan="6">Loading...</td></tr>'; // Show loading
             
             try {
@@ -114,14 +132,8 @@
                 tableBody.innerHTML = '<tr><td colspan="6">Error loading data</td></tr>';
             }
             const selectedDate = new Date(dateInput.value);
-            const selectedWage = parseInt(wageInput.value, 10);
-            const rows = tableBody.getElementsByTagName("tr");
             
-            for (let i = 0; i < rows.length; i++) {
-                const dateCell = rows[i].getElementsByTagName("td")[4]; // Assuming the date is in the 5th column
-                const rowDate = new Date(dateCell.textContent);
-                rows[i].style.display = rowDate >= selectedDate ? "" : "none";
-            }
+            filterByDate(selectedDate,rows);
 
         });
 
@@ -144,14 +156,13 @@
             }
         });
 
-        const wageSlider = document.querySelector('input[name="wageFilter"]');
-        const wageValue = document.getElementById("wageValue");
+        
 
-        wageSlider.addEventListener("input", function() {
-            wageValue.textContent = `$${wageSlider.value}`;
+        wageInput.addEventListener("input", function() {
+            wageValue.textContent = `$${wageInput.value}`;
         });
 
-        const dateInput = document.querySelector('input[name="dateFilter"]');
+        
         dateInput.addEventListener("change", function() {
             const selectedDate = new Date(dateInput.value);
             const tableBody = document.getElementById("tableBody");
@@ -168,7 +179,6 @@
             }
         });
         
-        const wageInput = document.querySelector('input[name="wageFilter"]');
         wageInput.addEventListener("input", function() {
             // add date filter
             const selectedDate = new Date(dateInput.value);
