@@ -12,12 +12,16 @@
         <input type="search" name="searchInput" placeholder="Search..." size="30" required>
         <button id="searchButton">Search</button>
         <div style="margin: 20px 0; vertical-align: middle;">
-            <label for="dateFilter">Oldest posted:</label>
-            <input type="date" name="dateFilter" id="dateFilter" value="@DateTime.Now.AddMonths(-3).ToString("yyyy-MM-dd")" required>
-
-            <label for="wageFilter">Minimum wage:</label>
-            <input type="range" name="wageFilter" id="wageFilter" step="1" value="1" min="0" max="1" required>
-            <span id="wageValue">$1</span>
+            <div style="margin: 10px 0;">
+                <label for="dateFilter">Oldest posted:</label>
+                <input type="date" name="dateFilter" id="dateFilter" value="@DateTime.Now.AddMonths(-3).ToString("yyyy-MM-dd")" required>
+            </div>
+            
+            <div style="margin: 10px 0;">
+                <label for="wageFilter">Minimum wage:</label>
+                <input id="wageChange" type="number" name="wageFilterMax" id="wageFilterMax" value="1" min="0" max="1" required>
+            </div>
+            
         </div>
     </div>
 
@@ -42,7 +46,7 @@
                         <td>@job.Location</td>
                         <td>@job.Wage</td>
                         <td>@job.PostedOn</td>
-                        <td><a href="@job.Url">View Job</a></td>
+                        <td><a href="@job.Url" target="_blank">View Job</a></td>
                     </tr>
                 }
             </tbody>
@@ -53,6 +57,10 @@
 
 @section Scripts {
     <script>
+        const dateInput = document.querySelector('input[name="dateFilter"]');
+        const tableBody = document.getElementById("tableBody");
+        const rows = tableBody.getElementsByTagName("tr");
+
         function findAllNumbers(input) {
             if (!input || input.trim() === "") {
                 return [];
@@ -74,8 +82,20 @@
             return numbers.length > 0 ? Math.max(...numbers) : null;
         }
 
+        function filterByDate(selectedDate,rows) {
+            for (let i = 0; i < rows.length; i++) {
+                const dateCell = rows[i].getElementsByTagName("td")[4]; // Assuming the date is in the 5th column
+                const rowDate = new Date(dateCell.textContent);
+                rows[i].style.display = rowDate >= selectedDate ? "" : "none";
+            }
+        }
+
+        document.onload = function() {
+            tableBody.innerHTML = '<tr><td colspan="6">""</td></tr>'; // Show loading
+        };
+
         document.getElementById("updateButton").addEventListener("click", async function() {
-            const tableBody = document.getElementById("tableBody");
+            
             tableBody.innerHTML = '<tr><td colspan="6">Loading...</td></tr>'; // Show loading
             
             try {
@@ -100,28 +120,22 @@
                     locationCell.textContent = item.location;
                     wageCell.textContent = item.wage;
                     dateCell.textContent = item.postedOn;
-                    urlCell.innerHTML = '<a href="' + item.url + '">View Job</a>';
+                    urlCell.innerHTML = '<a href="' + item.url + '" target="_blank">View Job</a>';
                     if (item.wage) {
                         var maxNum = findMaxNumber(item.wage); // Find the maximum number in the wage string
-                        if (maxNum > wageFilter.max) {
-                            wageFilter.max = maxNum; // Update max value for wage filter
+                        if (maxNum > wageChange.max) {
+                            wageChange.max = maxNum; 
                         }
                     }
                 });
-                //wageFilter.max = updatedData.reduce((max, job) => Math.max(max, parseInt(job.wage.replace(/[^0-9]/g, ''))), 0); // Update max value for wage filter
+                
             } catch (error) {
                 console.error('Error fetching updated data:', error);
                 tableBody.innerHTML = '<tr><td colspan="6">Error loading data</td></tr>';
             }
             const selectedDate = new Date(dateInput.value);
-            const selectedWage = parseInt(wageInput.value, 10);
-            const rows = tableBody.getElementsByTagName("tr");
             
-            for (let i = 0; i < rows.length; i++) {
-                const dateCell = rows[i].getElementsByTagName("td")[4]; // Assuming the date is in the 5th column
-                const rowDate = new Date(dateCell.textContent);
-                rows[i].style.display = rowDate >= selectedDate ? "" : "none";
-            }
+            filterByDate(selectedDate,rows);
 
         });
 
@@ -144,42 +158,21 @@
             }
         });
 
-        const wageSlider = document.querySelector('input[name="wageFilter"]');
-        const wageValue = document.getElementById("wageValue");
-
-        wageSlider.addEventListener("input", function() {
-            wageValue.textContent = `$${wageSlider.value}`;
-        });
-
-        const dateInput = document.querySelector('input[name="dateFilter"]');
+        
         dateInput.addEventListener("change", function() {
             const selectedDate = new Date(dateInput.value);
-            const tableBody = document.getElementById("tableBody");
-            const rows = tableBody.getElementsByTagName("tr");
-            console.log("Selected date:", selectedDate); // Debugging line
-            console.log("Rows length:", rows.length); // Debugging line
-            for (let i = 0; i < rows.length; i++) {
-                const dateCell = rows[i].getElementsByTagName("td")[4]; // Assuming the date is in the 5th column
-                const rowDate = new Date(dateCell.textContent);
-                rows[i].style.display = rowDate >= selectedDate ? "" : "none";
-                console.log("Was larger than selected date: ", rowDate >= selectedDate); // Debugging line
-                console.log("Row date: ", rowDate); // Debugging line
-                console.log("Selected date: ", selectedDate); // Debugging line
-            }
+            filterByDate(selectedDate,rows);
         });
         
-        const wageInput = document.querySelector('input[name="wageFilter"]');
-        wageInput.addEventListener("input", function() {
+        wageChange.addEventListener("input", function() {
             // add date filter
             const selectedDate = new Date(dateInput.value);
-            const selectedWage = parseInt(wageInput.value, 10);
-            const tableBody = document.getElementById("tableBody");
-            const rows = tableBody.getElementsByTagName("tr");
+            const selectedWage = parseInt(wageChange.value, 10);
 
             for (let i = 0; i < rows.length; i++) {
-                const wageCell = rows[i].getElementsByTagName("td")[3]; // Assuming the wage is in the 4th column
-                const dateCell = rows[i].getElementsByTagName("td")[4]; // Assuming the date is in the 5th column
-                const rowWage = findMaxNumber(wageCell.textContent); // Find the maximum number in the wage string
+                const wageCell = rows[i].getElementsByTagName("td")[3]; 
+                const dateCell = rows[i].getElementsByTagName("td")[4]; 
+                const rowWage = findMaxNumber(wageCell.textContent); 
                 const rowDate = new Date(dateCell.textContent);
                 if (rowDate >= selectedDate){
                     rows[i].style.display = rowWage >= selectedWage ? "" : "none";
