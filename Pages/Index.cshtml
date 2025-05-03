@@ -12,13 +12,16 @@
         <input type="search" name="searchInput" placeholder="Search..." size="30" required>
         <button id="searchButton">Search</button>
         <div style="margin: 20px 0; vertical-align: middle;">
-            <label for="dateFilter">Oldest posted:</label>
-            <input type="date" name="dateFilter" id="dateFilter" value="@DateTime.Now.AddMonths(-3).ToString("yyyy-MM-dd")" required>
-
-            <label for="wageFilter">Minimum wage:</label>
-            <input type="range" name="wageFilter" id="wageFilter" step="1" value="1" min="0" max="1" required>
-            <input id="wageChange" type="number" name="wageFilterMax" id="wageFilterMax" value="1" required>
-            <!-- SET WAGECHANGE MAX AND MIN AND DELETE WAGEFILTER -->
+            <div style="margin: 10px 0;">
+                <label for="dateFilter">Oldest posted:</label>
+                <input type="date" name="dateFilter" id="dateFilter" value="@DateTime.Now.AddMonths(-3).ToString("yyyy-MM-dd")" required>
+            </div>
+            
+            <div style="margin: 10px 0;">
+                <label for="wageFilter">Minimum wage:</label>
+                <input id="wageChange" type="number" name="wageFilterMax" id="wageFilterMax" value="1" min="0" max="1" required>
+            </div>
+            
         </div>
     </div>
 
@@ -55,7 +58,6 @@
 @section Scripts {
     <script>
         const dateInput = document.querySelector('input[name="dateFilter"]');
-        const wageInput = document.querySelector('input[name="wageFilter"]');
         const tableBody = document.getElementById("tableBody");
         const rows = tableBody.getElementsByTagName("tr");
 
@@ -121,12 +123,12 @@
                     urlCell.innerHTML = '<a href="' + item.url + '" target="_blank">View Job</a>';
                     if (item.wage) {
                         var maxNum = findMaxNumber(item.wage); // Find the maximum number in the wage string
-                        if (maxNum > wageFilter.max) {
-                            wageFilter.max = maxNum; // Update max value for wage filter
+                        if (maxNum > wageChange.max) {
+                            wageChange.max = maxNum; 
                         }
                     }
                 });
-                //wageFilter.max = updatedData.reduce((max, job) => Math.max(max, parseInt(job.wage.replace(/[^0-9]/g, ''))), 0); // Update max value for wage filter
+                
             } catch (error) {
                 console.error('Error fetching updated data:', error);
                 tableBody.innerHTML = '<tr><td colspan="6">Error loading data</td></tr>';
@@ -163,36 +165,14 @@
         });
         
         wageChange.addEventListener("input", function() {
-            wageInput.value = wageChange.value; // Update the range input value
             // add date filter
             const selectedDate = new Date(dateInput.value);
             const selectedWage = parseInt(wageChange.value, 10);
 
             for (let i = 0; i < rows.length; i++) {
-                const wageCell = rows[i].getElementsByTagName("td")[3]; // Assuming the wage is in the 4th column
-                const dateCell = rows[i].getElementsByTagName("td")[4]; // Assuming the date is in the 5th column
-                const rowWage = findMaxNumber(wageCell.textContent); // Find the maximum number in the wage string
-                const rowDate = new Date(dateCell.textContent);
-                if (rowDate >= selectedDate){
-                    rows[i].style.display = rowWage >= selectedWage ? "" : "none";
-                }else{
-                    continue;
-                }
-            }
-        });
-
-        wageInput.addEventListener("input", function() {
-            wageChange.value = wageInput.value; // Update the number input value
-            // add date filter
-            const selectedDate = new Date(dateInput.value);
-            const selectedWage = parseInt(wageInput.value, 10);
-            const tableBody = document.getElementById("tableBody");
-            const rows = tableBody.getElementsByTagName("tr");
-
-            for (let i = 0; i < rows.length; i++) {
-                const wageCell = rows[i].getElementsByTagName("td")[3]; // Assuming the wage is in the 4th column
-                const dateCell = rows[i].getElementsByTagName("td")[4]; // Assuming the date is in the 5th column
-                const rowWage = findMaxNumber(wageCell.textContent); // Find the maximum number in the wage string
+                const wageCell = rows[i].getElementsByTagName("td")[3]; 
+                const dateCell = rows[i].getElementsByTagName("td")[4]; 
+                const rowWage = findMaxNumber(wageCell.textContent); 
                 const rowDate = new Date(dateCell.textContent);
                 if (rowDate >= selectedDate){
                     rows[i].style.display = rowWage >= selectedWage ? "" : "none";
