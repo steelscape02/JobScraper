@@ -38,17 +38,6 @@
                 </tr>
             </thead>
             <tbody itemid="tableBody" id="tableBody">
-                @foreach (var job in Model.Jobs)
-                {
-                    <tr>
-                        <td>@job.Title</td>
-                        <td>@job.Company</td>
-                        <td>@job.Location</td>
-                        <td>@job.Wage</td>
-                        <td>@job.PostedOn</td>
-                        <td><a href="@job.Url" target="_blank">View Job</a></td>
-                    </tr>
-                }
             </tbody>
         </table>
     </div>
@@ -91,7 +80,7 @@
         }
 
         document.onload = function() {
-            tableBody.innerHTML = ''; // Show loading
+            tableBody.innerHTML = '';
         };
 
         document.getElementById("updateButton").addEventListener("click", async function() {
@@ -104,7 +93,7 @@
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const updatedData = await response.json();
-                tableBody.innerHTML = ''; // Clear loading or previous data
+                tableBody.innerHTML = ''; // Clear loading
                
 
                 updatedData.forEach(item => {
