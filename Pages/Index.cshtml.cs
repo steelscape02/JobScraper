@@ -15,7 +15,7 @@ public class IndexModel(ILogger<IndexModel> logger) : PageModel
 
     private readonly List<Job> _jobs = ListScraper.Jobs;
 
-    public required List<Job> Jobs { get; set; }
+    public required List<Job> Jobs { get; set; } = [];
 
     private int[] FindAllNumbers(string? input)
     {
@@ -35,7 +35,7 @@ public class IndexModel(ILogger<IndexModel> logger) : PageModel
 
     public void OnGet()
     {
-        Jobs = _jobs;
+        Jobs.Clear();
     }
 
     public void UpdateMaxValue(string? input)
