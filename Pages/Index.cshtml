@@ -50,6 +50,8 @@
         const tableBody = document.getElementById("tableBody");
         const rows = tableBody.getElementsByTagName("tr");
 
+        tableBody.innerHTML = ''; // Show loading
+
         function findAllNumbers(input) {
             if (!input || input.trim() === "") {
                 return [];
