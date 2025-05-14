@@ -50,7 +50,6 @@
         const tableBody = document.getElementById("tableBody");
         const rows = tableBody.getElementsByTagName("tr");
 
-        tableBody.innerHTML = ''; // Show loading
 
         function findAllNumbers(input) {
             if (!input || input.trim() === "") {
@@ -79,11 +78,10 @@
                 const rowDate = new Date(dateCell.textContent);
                 rows[i].style.display = rowDate >= selectedDate ? "" : "none";
             }
-        }
-
-        document.onload = function() {
-            tableBody.innerHTML = '';
-        };
+        } 
+        document.addEventListener('DOMContentLoaded', function() {
+            tableBody.innerHTML = ''; // Show loading
+        });
 
         document.getElementById("updateButton").addEventListener("click", async function() {
             
