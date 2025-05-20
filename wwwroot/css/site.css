@@ -31,7 +31,58 @@ body {
 }
 
 table, tr{
-  border: 1px solid black; width: 100%; text-align: center;
+  width: 100%; text-align: center;
+}
+
+th, td {
+  padding: 10px;
+  text-align: left;
+  background-color: #f2f2f2; /* Default row background */
+}
+
+/* Style for the first cell in each row */
+tr > *:first-child {
+  position: relative;
+  border-top-left-radius: 10px; /* Adjust the curve radius */
+  border-bottom-left-radius: 10px;
+  padding-left: 20px; /* Add some padding to accommodate the curve */
+}
+
+tr > *:first-child::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 10px;
+  background-color: inherit; /* Match the cell's background */
+  border-top-left-radius: inherit;
+  border-bottom-left-radius: inherit;
+}
+
+/* Style for the last cell in each row */
+tr > *:last-child {
+  position: relative;
+  border-top-right-radius: 10px; /* Adjust the curve radius */
+  border-bottom-right-radius: 10px;
+  padding-right: 20px; /* Add some padding to accommodate the curve */
+}
+
+tr > *:last-child::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 10px;
+  background-color: inherit; /* Match the cell's background */
+  border-top-right-radius: inherit;
+  border-bottom-right-radius: inherit;
+}
+
+/* Optional: Alternate row background */
+tr:nth-child(even) > * {
+  background-color: #ddd;
 }
 
 .slidecontainer {

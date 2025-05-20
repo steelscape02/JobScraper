@@ -14,7 +14,7 @@ public abstract class Program
 
         builder.WebHost.ConfigureKestrel(options =>
         {
-            options.ListenAnyIP(Int32.Parse(port)); // Listen on 0.0.0.0
+            options.ListenAnyIP(int.Parse(port)); // Listen on 0.0.0.0
         });
 
         var app = builder.Build();
