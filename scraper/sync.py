@@ -1,28 +1,34 @@
-from firebase_admin.firestore import firestore
 
-def sync(db : firestore.CollectionReference, new_list : list[dict[str,str]]):
+from scraper.scraper import Scraper
+from scraper.job import Job
+
+def sync(new_list : list[dict[str,str]], existing_items: Scraper):
 
 
     # add and update
     for new_item in new_list:
         found_new = False
-        for old_item in db.stream():
-            if new_item.get('url') == old_item.get('url'): #url is uuid
+        for old_item in existing_items.fireDB.stream():
+            if new_item.get('url') == old_item.url: #url is uuid
                 found_new = True
-                old_item.update(new_item) # Updates existing old item in temp with new values
-                db.document(new_item.get('url')).update(new_item)  # Assuming url is unique and used as document ID
+                #TODO: Reimp update
+                adder = Job(new_item.get('url'))
+                adder.from_dict(new_item)
+                existing_items.update(adder)
                 break
         if not found_new:
-            db.document(new_item.get('url')).set(new_item)
+            adder = Job(new_item.get('url'))
+            adder.from_dict(new_item)
+            existing_items.add(adder)
 
     # remove
-    for old_item in db.stream():
+    for old_item in existing_items.fireDB.stream():
         found_old = False
         for new_item in new_list:
-            if old_item.get('url') == new_item.get('url'): #url is uuid
+            if old_item.url == new_item.get('url'): #url is uuid
                 found_old = True
                 break
         
         if not found_old:
-            db.document(old_item.get('url')).delete()  # Delete from Firestore
+            existing_items.remove(old_item.url)
 

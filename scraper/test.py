@@ -1,19 +1,14 @@
-from os.path import relpath
-import json
+import firebase_admin
+from firebase_admin import firestore
+from scraper import Job #type: ignore
 
+# Application Default credentials are automatically created.
 
-rel_path = relpath("C:/Users/nicho/Documents/Programming/JobScraper-2/creds/cloud-demo-47f8d-firebase-adminsdk-fbsvc-1d32af7619.json")
+PROJECT_ID = "job-scraper-5a9d0"  # Replace with your actual project ID
+app = firebase_admin.initialize_app(options={'projectId': PROJECT_ID})
+db = firestore.client()
 
-print(rel_path)
-f = open(rel_path, "r")
+thing = Job("https:\\\\example.com\\job1")
+col = db.collection("jobs_list")
 
-#TODO: Run relpath in program, works as creds/thingy
-
-# returns JSON object as a dictionary
-data = json.load(f)
-
-# Iterating through the json list
-#print(data)
-
-# Closing file
-f.close()
+col.document(thing.url).set(thing.to_dict())

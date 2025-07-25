@@ -55,3 +55,4 @@ nunit-*.xml
 TODO.txt
 creds/cloud-demo-47f8d-firebase-adminsdk-fbsvc-1d32af7619.json
 creds/credentials.json
+creds/config.txt
