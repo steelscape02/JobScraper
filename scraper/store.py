@@ -9,17 +9,13 @@ class Store:
             self.fireDB = db
         pass
     
-    # def add(self, job: Job):
-    #     url = job.url.replace("/", "\\")  # Normalize URL format
-    #     self.fireDB.document(url).set(job.to_dict())
 
     def remove(self, url: str):
-        format_url = url.replace("/", "\\")
-        self.fireDB.document(format_url).delete()
+        ext = url.split("/")[-1]  # Get the last part of the URL
+        self.fireDB.document(ext).delete()
     
     def update(self, job: Job):
-        url = job.url.replace("/", "\\")  # Normalize URL format
-        self.fireDB.document(url).set(job.to_dict())
+        self.fireDB.document(job.id).set(job.to_dict())
 
     def Display(self):
         docs = self.fireDB.stream()

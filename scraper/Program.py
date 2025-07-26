@@ -1,8 +1,9 @@
 import firebase_admin
 from firebase_admin import firestore
 from store import Store
-from job import Job
+from scraper import ListScraper #type: ignore
 import json
+import asyncio
 
 with open('creds/credentials.json', 'r') as file:
         data = json.load(file)
@@ -15,3 +16,11 @@ db = firestore.client()
 doc_ref = db.collection(COLL_NAME)
 
 store = Store(doc_ref)
+
+scraper = ListScraper()
+
+async def main():
+    await scraper.scrape(store)
+
+asyncio.run(main())
+

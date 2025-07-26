@@ -1,12 +1,12 @@
 class Job:
-
+    id = ""
     title = ""
     description = ""
     requirements = ""
-    contact = ""
+    contact : str | None = ""
     phone = ""
     email = ""
-    company = ""
+    company : str | None = ""
     location = ""
     postedOn = ""
     hours = ""
@@ -22,6 +22,7 @@ class Job:
 
     def to_dict(self):
         return {
+            'id' : self.id,
             'url' : self.url,
             'title' : self.title,
             'description' : self.description,
@@ -42,6 +43,7 @@ class Job:
         } 
     
     def from_dict(self, d: dict):
+        self.id = str(d.get('id', ""))
         self.title = str(d.get('title', ""))
         self.description = str(d.get('description', ""))
         self.requirements = str(d.get('requirements', ""))
