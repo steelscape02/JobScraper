@@ -1,6 +1,6 @@
 import firebase_admin
 from firebase_admin import firestore
-from scraper import Scraper #type: ignore
+from store import Store
 from job import Job
 import json
 
@@ -14,8 +14,4 @@ db = firestore.client()
 
 doc_ref = db.collection(COLL_NAME)
 
-scraper = Scraper(doc_ref)
-testJob = Job("https://example.com/job1")
-scraper.update(testJob)
-
-scraper.Display()
+store = Store(doc_ref)

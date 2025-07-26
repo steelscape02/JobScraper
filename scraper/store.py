@@ -2,7 +2,7 @@ from typing import Optional
 from job import Job
 from firebase_admin.firestore import firestore
 
-class Scraper:
+class Store:
     fireDB : firestore.CollectionReference
     def __init__(self, db : Optional[firestore.CollectionReference] = None):
         if db is not None:

@@ -1,8 +1,8 @@
 
-from scraper.scraper import Scraper
+from scraper.store import Store
 from scraper.job import Job
 
-def sync(new_list : list[dict[str,str]], existing_items: Scraper):
+def sync(new_list : list[dict[str,str]], existing_items: Store):
 
 
     # add and update
@@ -19,7 +19,7 @@ def sync(new_list : list[dict[str,str]], existing_items: Scraper):
         if not found_new:
             adder = Job(new_item.get('url'))
             adder.from_dict(new_item)
-            existing_items.add(adder)
+            existing_items.update(adder)
 
     # remove
     for old_item in existing_items.fireDB.stream():
