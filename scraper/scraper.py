@@ -10,11 +10,12 @@ class ListScraper:
 
     @staticmethod
     async def scrape(store: Store):
-        ListScraper.store.clear()
+        #TODO: Delete old jobs
         await ListScraper.ScrapeAllJobs(store, ListScraper.BASE_URL)
 
     @staticmethod
-    async def ScrapeAllJobs(store, base_url, ext=""):
+    async def ScrapeAllJobs(store : Store, base_url : str, ext : str =""):
+        local = []
         try:
             full_url = base_url + ext
             response = requests.get(full_url)
@@ -25,14 +26,18 @@ class ListScraper:
 
             for link in links:
                 href = link.get('href')
-                text = link.text.strip() # Use .text for text content
-
+                text = link.text.strip()
                 if "Get Involved" in text:
-                    if (href != None) : await ListScraper.ScrapeJob(store, href)
+                    if (href != None) : 
+                        local.append(await ListScraper.ScrapeJob(store, href))
                 
                 elif "Next" in text: 
                     if (href != None) : await ListScraper.ScrapeAllJobs(store, base_url,href)
                 
+            #deletions
+            for job in local:
+                if job is not None and not store.has(job):
+                    store.remove(job)
 
         except requests.exceptions.RequestException as e:
             print(f"Error fetching URL: {e}")
@@ -40,7 +45,7 @@ class ListScraper:
             print(f"An unexpected error occurred: {e}")
 
     @staticmethod
-    async def ScrapeJob(store, url):
+    async def ScrapeJob(store, url) -> Job | None:
         try:
             response = requests.get(url)
             response.raise_for_status()
@@ -49,21 +54,17 @@ class ListScraper:
             job = Job(url)
             job.id = url.split("/")[-1]  # Use the last part of the URL as the job ID
 
-            # Posted Date
-            # C#: document.GetElementsByClassName("ArticlePage-datePublished")[0].TextContent;
             posted_date_element = soup.find(class_="ArticlePage-datePublished")
             if posted_date_element:
                 job.postedOn = posted_date_element.text.strip()
-            # Headers containing job details
-            # C#: document.GetElementsByClassName("RichTextArticleBody");
+
             headers = soup.find_all(class_="RichTextArticleBody")
 
             for header in headers:
                 header_text = header.text
 
-                # Extracting details using regex (translated from C# regexes)
                 job.title = ListScraper._extract_title(header_text)
-                if job.title == "Job Title Name": # Check for placeholder
+                if job.title == "Job Title Name":
                     continue
 
                 job.description = ListScraper._extract_description(header_text)
@@ -96,21 +97,17 @@ class ListScraper:
                     job.comments = ListScraper._extract_comments_advanced(header_text)
 
                 store.update(job)
+                return job
 
         except requests.exceptions.RequestException as e:
             print(f"Error fetching job URL {url}: {e}")
         except Exception as e:
             print(f"An unexpected error occurred while scraping job {url}: {e}")
 
-    # --- Regex Extraction Methods (Python equivalent) ---
     @staticmethod
     def _extract_contact_name(input_string):
-        # Original: r"(?<=Contact Name\s*)([\s\S]*?)(?=\s*Company)"
-        # Problem: \s* in look-behind
-        # Solution: Match "Contact Name" and the spaces, then capture the actual value.
-        regex = r"Contact Name\s*([\s\S]*?)\s*Company" # Changed to match the prefix, capture content, then match the suffix
+        regex = r"Contact Name\s*([\s\S]*?)\s*Company"
         match = re.search(regex, input_string)
-        # We now need to access group(1) because group(0) is the entire match including "Contact Name" and "Company"
         return match.group(1).strip() if match else None
 
     @staticmethod
@@ -127,17 +124,10 @@ class ListScraper:
 
     @staticmethod
     def _extract_address(input_string):
-        # Original: r"(?<=Address\s*)(.*)(?=\s*Email Address)"
-        # The C# AddressRegex was: "(?<=Address\s*)(.*)(?=\s*Email Address)"
-        # This one is a bit tricky if "Email Address" is not always there immediately after the address.
-        # Let's consider the full content between markers.
-        regex = r"Address\s*(.*?)\s*Email Address" # Capture non-greedy everything after "Address" and before "Email Address"
+        regex = r"Address\s*(.*?)\s*Email Address"
         match = re.search(regex, input_string)
         if match:
             value = match.group(1).strip()
-            # If the C# logic was specifically to remove ", City, State" from the *matched value*,
-            # you'd do it here:
-            # value = value.replace(", City, State", "") # Or more robustly with regex.
             return value
         return ""
 

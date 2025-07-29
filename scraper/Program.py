@@ -23,4 +23,3 @@ async def main():
     await scraper.scrape(store)
 
 asyncio.run(main())
-

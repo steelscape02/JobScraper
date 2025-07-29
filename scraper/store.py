@@ -10,13 +10,15 @@ class Store:
         pass
     
 
-    def remove(self, url: str):
-        ext = url.split("/")[-1]  # Get the last part of the URL
-        self.fireDB.document(ext).delete()
+    def remove(self, job: Job):
+        self.fireDB.document(job.id).delete()
     
     def update(self, job: Job):
         self.fireDB.document(job.id).set(job.to_dict())
 
+    def has(self, job : Job) -> bool:
+        return self.fireDB.document(job.id).get().exists
+    
     def Display(self):
         docs = self.fireDB.stream()
         for doc in docs:
