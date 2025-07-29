@@ -7,8 +7,6 @@ class Store:
     def __init__(self, db : Optional[firestore.CollectionReference] = None):
         if db is not None:
             self.fireDB = db
-        pass
-    
 
     def remove(self, job: Job):
         self.fireDB.document(job.id).delete()
@@ -19,7 +17,7 @@ class Store:
     def has(self, job : Job) -> bool:
         return self.fireDB.document(job.id).get().exists
     
-    def Display(self):
+    def Display(self): #dev only
         docs = self.fireDB.stream()
         for doc in docs:
             print(f"{doc.id} => {doc.to_dict()}")
