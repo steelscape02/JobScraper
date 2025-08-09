@@ -57,4 +57,8 @@ creds/cloud-demo-47f8d-firebase-adminsdk-fbsvc-1d32af7619.json
 creds/credentials.json
 creds/config.txt
 scraper/__pycache__
+appsettings.Development.json
+appsettings.json
+JobSite/.vs/
 .vs/
+Properties/
