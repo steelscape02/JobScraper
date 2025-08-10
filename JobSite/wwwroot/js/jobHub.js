@@ -45,6 +45,7 @@ connection.on("ReceiveRemove", function (jobId) { //TODO: Funny AI no know what 
     for (var i = 0; i < rows.length; i++) {
         var row = rows[i];
         if (row.cells[0] === jobId) {
+            console.log("Removing job with ID:", jobId);
             tableBody.removeChild(row);
             break;
         }
@@ -61,6 +62,7 @@ connection.on("ReceiveUpdate", function (job) { //TODO: Funny AI no know what ID
     for (var i = 0; i < rows.length; i++) {
         var row = rows[i];
         if (row.cells[0] === job.title) {
+            console.log("Updating job with title:", job.title);
             row.cells[1].textContent = job.company;
             row.cells[2].textContent = job.location;
             row.cells[3].textContent = job.wage;

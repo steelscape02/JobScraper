@@ -74,7 +74,6 @@ namespace JobSite.Pages
                     {
                         case DocumentChange.Type.Added:
                             {
-                                //TODO: Add logs to show added
                                 var job = new Job();
                                 job.FromDict(change.Document.ToDictionary());
                                 Jobs.Add(job);
@@ -84,7 +83,6 @@ namespace JobSite.Pages
 
                         case DocumentChange.Type.Modified:
                             {
-                                //TODO: Add logs to show modified
                                 var job = new Job();
                                 job.FromDict(change.Document.ToDictionary());
                                 var existingJob = Jobs.FirstOrDefault(j => j.Url == job.Url);
@@ -99,7 +97,6 @@ namespace JobSite.Pages
 
                         case DocumentChange.Type.Removed:
                             {
-                                //TODO: Add logs to show removed
                                 var job = new Job();
                                 job.FromDict(change.Document.ToDictionary());
                                 Jobs.Remove(job);

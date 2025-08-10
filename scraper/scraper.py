@@ -5,17 +5,16 @@ from job import Job
 from store import Store
 
 class ListScraper:
-    store = []
+    local = []
     BASE_URL = "https://www.byui.edu/help-wanted-postings"
 
     @staticmethod
     async def scrape(store: Store):
-        #TODO: Delete old jobs
         await ListScraper.ScrapeAllJobs(store, ListScraper.BASE_URL)
 
     @staticmethod
     async def ScrapeAllJobs(store : Store, base_url : str, ext : str =""):
-        local = []
+        
         try:
             full_url = base_url + ext
             response = requests.get(full_url)
@@ -29,15 +28,17 @@ class ListScraper:
                 text = link.text.strip()
                 if "Get Involved" in text:
                     if (href != None) : 
-                        local.append(await ListScraper.ScrapeJob(store, href))
+                        ListScraper.local.append(await ListScraper.ScrapeJob(store, href))
                 
                 elif "Next" in text: 
-                    if (href != None) : await ListScraper.ScrapeAllJobs(store, base_url,href)
+                    if (href != None): 
+                        await ListScraper.ScrapeAllJobs(store, base_url,href)
+                        return
                 
-            #deletions
-            for job in local:
-                if job is not None and not store.has(job):
-                    store.remove(job)
+            print(f"Scraped {len(ListScraper.local)} jobs from {full_url}")
+            for job in store.fireDB.stream():
+                if job is not None and job.id not in ListScraper.local:
+                    store.remove(job.id)
 
         except requests.exceptions.RequestException as e:
             print(f"Error fetching URL: {e}")
@@ -97,7 +98,7 @@ class ListScraper:
                     job.comments = ListScraper._extract_comments_advanced(header_text)
 
                 store.update(job)
-                return job
+                return job.id
 
         except requests.exceptions.RequestException as e:
             print(f"Error fetching job URL {url}: {e}")

@@ -8,8 +8,8 @@ class Store:
         if db is not None:
             self.fireDB = db
 
-    def remove(self, job: Job):
-        self.fireDB.document(job.id).delete()
+    def remove(self, id : str):
+        self.fireDB.document(id).delete()
     
     def update(self, job: Job):
         self.fireDB.document(job.id).set(job.to_dict())
