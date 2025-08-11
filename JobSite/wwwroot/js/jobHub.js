@@ -58,7 +58,6 @@ connection.on("ReceiveUpdate", function (job) { //TODO: Funny AI no know what ID
         return;
     }
     var rows = tableBody.getElementsByTagName("tr");
-    console.log("updating for ", job.title);
     for (var i = 0; i < rows.length; i++) {
         var row = rows[i];
         if (row.cells[0].textContent === job.title) {
