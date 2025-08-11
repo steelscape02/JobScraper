@@ -44,8 +44,7 @@ connection.on("ReceiveRemove", function (jobId) { //TODO: Funny AI no know what 
     var rows = tableBody.getElementsByTagName("tr");
     for (var i = 0; i < rows.length; i++) {
         var row = rows[i];
-        if (row.cells[0] === jobId) {
-            console.log("Removing job with ID:", jobId);
+        if (row.cells[0].textContent === jobId) {
             tableBody.removeChild(row);
             break;
         }
@@ -59,10 +58,10 @@ connection.on("ReceiveUpdate", function (job) { //TODO: Funny AI no know what ID
         return;
     }
     var rows = tableBody.getElementsByTagName("tr");
+    console.log("updating for ", job.title);
     for (var i = 0; i < rows.length; i++) {
         var row = rows[i];
-        if (row.cells[0] === job.title) {
-            console.log("Updating job with title:", job.title);
+        if (row.cells[0].textContent === job.title) {
             row.cells[1].textContent = job.company;
             row.cells[2].textContent = job.location;
             row.cells[3].textContent = job.wage;
