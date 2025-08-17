@@ -21,40 +21,14 @@ namespace JobSite.Pages
             _logger = logger;
             _hubContext = hubContext;
         }
-        static string credsPath = Path.Combine("..","creds", "credentials.json");
-        static string jsonString = System.IO.File.ReadAllText(credsPath);
+        static readonly string credsPath = Path.Combine("..","creds", "credentials.json");
+        static readonly string jsonString = System.IO.File.ReadAllText(credsPath);
 
         FirestoreChangeListener? listener = null;
 
-        JsonNode? root = JsonNode.Parse(jsonString);
+        private readonly JsonNode? root = JsonNode.Parse(jsonString);
 
         public List<Job> Jobs { get; set; } = [];
-
-
-        public async Task LoadTest()
-        {
-            var newJob = new Job();
-            newJob.FromDict(new Dictionary<string, object>
-            {
-                { "url", "https://example.com/job1" },
-                { "title", "Software Engineer" },
-                { "description", "Develop and maintain software applications." },
-                { "requirements", "C#, ASP.NET, SQL" },
-                { "contact", "" }
-            });
-
-            await Task.Delay(5000); // Simulate async operation
-
-            try
-            {
-                await _hubContext.Clients.All.SendAsync("ReceiveAdd", newJob);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error sending job to SignalR clients");
-            }
-
-        }
 
         public void OnGet()
         {
