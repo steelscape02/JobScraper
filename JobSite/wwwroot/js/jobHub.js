@@ -12,6 +12,8 @@ connection.on("ReceiveAdd", function (job) {
 
     var tr = document.createElement("tr");
 
+    tr.setAttribute("data-product-id", job.id); 
+
     var titleCell = document.createElement("td");
     titleCell.textContent = job.title;
     tr.appendChild(titleCell);
@@ -35,7 +37,7 @@ connection.on("ReceiveAdd", function (job) {
     tableBody.appendChild(tr);
 });
 
-connection.on("ReceiveRemove", function (jobId) { //TODO: Funny AI no know what ID is. Must fix for silly AI
+connection.on("ReceiveRemove", function (jobId) {
     var tableBody = document.getElementById("tableBody");
     if (!tableBody) {
         console.error("Element with id 'tableBody' not found.");
@@ -43,15 +45,16 @@ connection.on("ReceiveRemove", function (jobId) { //TODO: Funny AI no know what 
     }
     var rows = tableBody.getElementsByTagName("tr");
     for (var i = 0; i < rows.length; i++) {
-        var row = rows[i];
-        if (row.cells[0].textContent === jobId) {
+        var row = rows[i]
+        if (row.getAttribute("data-product-id") === jobId) {
+            console.log("removed")
             tableBody.removeChild(row);
             break;
         }
     }
 });
 
-connection.on("ReceiveUpdate", function (job) { //TODO: Funny AI no know what ID is. Must fix for silly AI
+connection.on("ReceiveUpdate", function (job) {
     var tableBody = document.getElementById("tableBody");
     if (!tableBody) {
         console.error("Element with id 'tableBody' not found.");
@@ -59,8 +62,9 @@ connection.on("ReceiveUpdate", function (job) { //TODO: Funny AI no know what ID
     }
     var rows = tableBody.getElementsByTagName("tr");
     for (var i = 0; i < rows.length; i++) {
-        var row = rows[i];
-        if (row.cells[0].textContent === job.title) {
+        var row = rows[i]
+        if (row.getAttribute("data-product-id") === job.id) {
+            row.cells[0].textContent = job.title;
             row.cells[1].textContent = job.company;
             row.cells[2].textContent = job.location;
             row.cells[3].textContent = job.wage;

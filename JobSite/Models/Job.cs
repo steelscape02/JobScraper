@@ -2,7 +2,7 @@
 {
     public class Job
     {
-        public string Id { get; set; } = "";
+        public string? Id { get; set; } = "";
         public string? Url { get; set; }
         public string? Title { get; set; }
         public string? Description { get; set; }
@@ -23,6 +23,7 @@
 
         public void FromDict(Dictionary<string, object> dict)
         {
+            Id = dict.TryGetValue("id", out object? id) && id != null ? id.ToString() : string.Empty;
             Title = dict.TryGetValue("title", out object? title) && title != null ? title.ToString() : null;
             Description = dict.TryGetValue("description", out object? description) && description != null ? description.ToString() : null;
             Requirements = dict.TryGetValue("requirements", out object? requirements) && requirements != null ? requirements.ToString() : null;

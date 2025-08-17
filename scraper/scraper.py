@@ -123,17 +123,6 @@ class ListScraper:
         match = re.search(regex, input_string)
         return match.group(1).strip() if match else ""
 
-# private static string ExtractAddress(string input)
-#     {
-#         var regex = AddressRegex();
-#         var match = regex.Match(input);
-
-#         if (!match.Success) return string.Empty;
-#         var value = match.Value.Trim();
-#         var index = value.IndexOf(", City, State", StringComparison.Ordinal);
-#         return index >= 0 ? value.Remove(index) : match.Value.Trim();
-#     }
-
     @staticmethod
     def _extract_address(input_string):
         regex = r"Address\s*(.*?)\s*Email Address"

@@ -51,7 +51,6 @@ namespace JobSite.Pages
                                 
                                 var job = new Job();
                                 job.FromDict(change.Document.ToDictionary());
-                                Debug.WriteLine($"Adding job : {job.Title}");
                                 Jobs.Add(job);
                                 _ = _hubContext.Clients.All.SendAsync("ReceiveAdd", job);
                                 break;
@@ -65,7 +64,6 @@ namespace JobSite.Pages
                                 if (existingJob != null)
                                 {
                                     existingJob.FromDict(change.Document.ToDictionary());
-                                    Debug.WriteLine($"Modifying job : {job.Title}");
                                     _ = _hubContext.Clients.All.SendAsync("ReceiveUpdate", existingJob);
                                 }
 
@@ -77,7 +75,7 @@ namespace JobSite.Pages
                                 var job = new Job();
                                 job.FromDict(change.Document.ToDictionary());
                                 Jobs.Remove(job);
-                                _ = _hubContext.Clients.All.SendAsync("ReceiveRemove", job.Title);
+                                _ = _hubContext.Clients.All.SendAsync("ReceiveRemove", job.Id);
                                 break;
                             }
                     }
