@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Text.Json.Nodes;
 using System;
 using System.IO;
+using System.Net.NetworkInformation;
 
 namespace JobSite.Pages
 {
@@ -21,7 +22,7 @@ namespace JobSite.Pages
             _logger = logger;
             _hubContext = hubContext;
         }
-        static readonly string credsPath = Path.Combine("..","creds", "credentials.json");
+        static readonly string credsPath = Path.Combine("..", "creds", "credentials.json");
         static readonly string jsonString = System.IO.File.ReadAllText(credsPath);
 
         FirestoreChangeListener? listener = null;
@@ -30,7 +31,7 @@ namespace JobSite.Pages
 
         public List<Job> Jobs { get; set; } = [];
 
-        public void OnGet()
+        public async Task OnGet()
         {
             if (root == null)
             {
@@ -38,17 +39,21 @@ namespace JobSite.Pages
                 return;
             }
             var projectID = (string?)root["project_id"];
+
+            await WaitForConnection();
+
             var db = FirestoreDb.Create(projectID);
             CollectionReference docRef = db.Collection((string?)root["coll_name"]);
             listener = docRef.Listen(snapshot =>
             {
+                Debug.WriteLine("reached listener");
                 foreach (DocumentChange change in snapshot.Changes)
                 {
                     switch (change.ChangeType)
                     {
                         case DocumentChange.Type.Added:
                             {
-                                
+
                                 var job = new Job();
                                 job.FromDict(change.Document.ToDictionary());
                                 Jobs.Add(job);
@@ -89,6 +94,34 @@ namespace JobSite.Pages
             {
                 listener.StopAsync().Wait();
                 listener = null;
+            }
+        }
+
+        public static async Task WaitForConnection()
+        {
+            while (!NetworkInterface.GetIsNetworkAvailable())
+            {
+                await Task.Delay(1000);
+            }
+
+            while (true)
+            {
+                try
+                {
+                    using var ping = new Ping();
+                    var reply = await ping.SendPingAsync("8.8.8.8");
+                    if (reply.Status == IPStatus.Success)
+                    {
+                        break;
+                    }
+
+                }
+                catch (PingException)
+                {
+
+                }
+
+                await Task.Delay(1000);
             }
         }
     }

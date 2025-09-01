@@ -1,4 +1,6 @@
-﻿namespace JobSite.Models
+﻿using System.Text.Json.Serialization;
+
+namespace JobSite.Models
 {
     public class Job
     {
