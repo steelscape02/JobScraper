@@ -5,8 +5,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddSignalR(options =>
 {
-    options.ClientTimeoutInterval = TimeSpan.FromSeconds(60);
-    options.KeepAliveInterval = TimeSpan.FromSeconds(45);
+    options.ClientTimeoutInterval = TimeSpan.FromSeconds(120);
+    options.KeepAliveInterval = TimeSpan.FromSeconds(100);
+    
 });
 builder.Services.AddHsts(options =>
 {

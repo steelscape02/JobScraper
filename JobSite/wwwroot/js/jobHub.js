@@ -1,9 +1,17 @@
 ﻿"use strict";
 
-var connection = new signalR.HubConnectionBuilder().withUrl("/jobHub").build();
+const delay = ms => new Promise(res => setTimeout(res, ms));
+
+const connection = new signalR.HubConnectionBuilder()
+    .withUrl("/jobHub")
+    .configureLogging(signalR.LogLevel.Information)
+    .withAutomaticReconnect()
+    .build();
+
 
 //TODO: refresh button?
 connection.on("ReceiveAdd", function (job) {
+    console.log("Received job:", job.title);
     var tableBody = document.getElementById("tableBody");
     if (!tableBody) {
         console.error("Element with id 'tableBody' not found.");
@@ -74,6 +82,19 @@ connection.on("ReceiveUpdate", function (job) {
     }
 });
 
-connection.start().catch(function (err) {
-    return console.error(err.toString());
+async function start() {
+    try {
+        connection.serverTimeoutInMilliseconds = 120000; // 2 minutes
+        await connection.start();
+        console.log("SignalR Connected.");
+    } catch (err) {
+        console.log(err);
+        setTimeout(start, 10000);
+    }
+};
+
+connection.onclose(async () => {
+    await start();
 });
+
+start();

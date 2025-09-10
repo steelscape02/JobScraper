@@ -33,6 +33,7 @@ namespace JobSite.Pages
 
         public async Task OnGet()
         {
+            
             if (root == null)
             {
                 _logger.LogError("Failed to parse credentials JSON.");
@@ -57,7 +58,9 @@ namespace JobSite.Pages
                                 var job = new Job();
                                 job.FromDict(change.Document.ToDictionary());
                                 Jobs.Add(job);
+                                Debug.WriteLine("Adding job to hub");
                                 _ = _hubContext.Clients.All.SendAsync("ReceiveAdd", job);
+                                Debug.WriteLine("Job added to hub");
                                 break;
                             }
 
