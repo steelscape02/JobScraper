@@ -1,10 +1,6 @@
-using FirebaseAdmin;
 using Google.Cloud.Firestore;
-using JobSite.Hubs;
 using JobSite.Models;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.SignalR;
-using System.Diagnostics;
 using System.Text.Json.Nodes;
 
 namespace JobSite.Pages
