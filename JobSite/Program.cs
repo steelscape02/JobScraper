@@ -16,6 +16,8 @@ builder.Services.AddHsts(options =>
     options.MaxAge = TimeSpan.FromMinutes(5); //TODO: ramp from 5 min to 1 week, to 1 month, etc
 });
 
+builder.Services.AddHostedService<FirestoreListener>();
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

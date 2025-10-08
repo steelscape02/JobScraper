@@ -6,34 +6,31 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.SignalR;
 using System.Diagnostics;
 using System.Text.Json.Nodes;
-using System;
-using System.IO;
-using System.Net.NetworkInformation;
 
 namespace JobSite.Pages
 {
     public class IndexModel : PageModel
     {
         private readonly ILogger<IndexModel> _logger;
-        private readonly IHubContext<JobHub> _hubContext;
 
-        public IndexModel(ILogger<IndexModel> logger, IHubContext<JobHub> hubContext)
+        public IndexModel(ILogger<IndexModel> logger)
         {
             _logger = logger;
-            _hubContext = hubContext;
         }
         static readonly string credsPath = Path.Combine("..", "creds", "credentials.json");
         static readonly string jsonString = System.IO.File.ReadAllText(credsPath);
-
-        FirestoreChangeListener? listener = null;
 
         private readonly JsonNode? root = JsonNode.Parse(jsonString);
 
         public List<Job> Jobs { get; set; } = [];
 
-        public async Task OnGet()
+        public async Task OnGetAsync()
         {
-            
+            await GetInitial();
+        }
+
+        private async Task GetInitial()
+        {
             if (root == null)
             {
                 _logger.LogError("Failed to parse credentials JSON.");
@@ -41,91 +38,19 @@ namespace JobSite.Pages
             }
             var projectID = (string?)root["project_id"];
 
-            await WaitForConnection();
-
             var db = FirestoreDb.Create(projectID);
-            CollectionReference docRef = db.Collection((string?)root["coll_name"]);
-            listener = docRef.Listen(snapshot =>
+            Query docQuery = db.Collection((string?)root["coll_name"]);
+            QuerySnapshot docQuerySnapshot = await docQuery.GetSnapshotAsync();
+            foreach (DocumentSnapshot documentSnapshot in docQuerySnapshot.Documents)
             {
-                Debug.WriteLine("reached listener");
-                foreach (DocumentChange change in snapshot.Changes)
-                {
-                    switch (change.ChangeType)
-                    {
-                        case DocumentChange.Type.Added:
-                            {
-
-                                var job = new Job();
-                                job.FromDict(change.Document.ToDictionary());
-                                Jobs.Add(job);
-                                Debug.WriteLine("Adding job to hub");
-                                _ = _hubContext.Clients.All.SendAsync("ReceiveAdd", job);
-                                Debug.WriteLine("Job added to hub");
-                                break;
-                            }
-
-                        case DocumentChange.Type.Modified:
-                            {
-                                var job = new Job();
-                                job.FromDict(change.Document.ToDictionary());
-                                var existingJob = Jobs.FirstOrDefault(j => j.Url == job.Url);
-                                if (existingJob != null)
-                                {
-                                    existingJob.FromDict(change.Document.ToDictionary());
-                                    _ = _hubContext.Clients.All.SendAsync("ReceiveUpdate", existingJob);
-                                }
-
-                                break;
-                            }
-
-                        case DocumentChange.Type.Removed:
-                            {
-                                var job = new Job();
-                                job.FromDict(change.Document.ToDictionary());
-                                Jobs.Remove(job);
-                                _ = _hubContext.Clients.All.SendAsync("ReceiveRemove", job.Id);
-                                break;
-                            }
-                    }
-                }
-            });
+                var job = new Job();
+                job.FromDict(documentSnapshot.ToDictionary());
+                Jobs.Add(job);
+            }
         }
 
         public void OnCleanup()
         {
-            if (listener != null)
-            {
-                listener.StopAsync().Wait();
-                listener = null;
-            }
-        }
-
-        public static async Task WaitForConnection()
-        {
-            while (!NetworkInterface.GetIsNetworkAvailable())
-            {
-                await Task.Delay(1000);
-            }
-
-            while (true)
-            {
-                try
-                {
-                    using var ping = new Ping();
-                    var reply = await ping.SendPingAsync("8.8.8.8");
-                    if (reply.Status == IPStatus.Success)
-                    {
-                        break;
-                    }
-
-                }
-                catch (PingException)
-                {
-
-                }
-
-                await Task.Delay(1000);
-            }
         }
     }
 }
