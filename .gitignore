@@ -62,4 +62,5 @@ appsettings.json
 JobSite/.vs/
 .vs/
 Properties/
-/JobSite/.idea/.idea.JobSite/.idea
+/JobSite/.idea/
+.idea/
