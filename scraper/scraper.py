@@ -34,8 +34,6 @@ class ListScraper:
                     if (href != None): 
                         await ListScraper.ScrapeAllJobs(store, base_url,href)
                         return
-                
-            print(f"Scraped {len(ListScraper.local)} jobs from {full_url}")
             for job in store.fireDB.stream():
                 if job is not None and job.id not in ListScraper.local:
                     store.remove(job.id)

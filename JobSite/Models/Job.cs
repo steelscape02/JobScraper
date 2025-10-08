@@ -26,6 +26,7 @@ namespace JobSite.Models
         public void FromDict(Dictionary<string, object> dict)
         {
             Id = dict.TryGetValue("id", out object? id) && id != null ? id.ToString() : string.Empty;
+            Url = dict.TryGetValue("url", out object? url) && url != null ? url.ToString() : null;
             Title = dict.TryGetValue("title", out object? title) && title != null ? title.ToString() : null;
             Description = dict.TryGetValue("description", out object? description) && description != null ? description.ToString() : null;
             Requirements = dict.TryGetValue("requirements", out object? requirements) && requirements != null ? requirements.ToString() : null;
@@ -34,7 +35,7 @@ namespace JobSite.Models
             Email = dict.TryGetValue("email", out object? email) && email != null ? email.ToString() : null;
             Company = dict.TryGetValue("company", out object? company) && company != null ? company.ToString() : null;
             Location = dict.TryGetValue("location", out object? location) && location != null ? location.ToString() : null;
-            PostedOn = dict.TryGetValue("posted_on", out object? posted_on) && posted_on != null ? posted_on.ToString() : null;
+            PostedOn = dict.TryGetValue("postedOn", out object? posted_on) && posted_on != null ? posted_on.ToString() : null;
             Hours = dict.TryGetValue("hours", out object? hours) && hours != null ? hours.ToString() : null;
             Wage = dict.TryGetValue("wage", out object? wage) && wage != null ? wage.ToString() : null;
             Start = dict.TryGetValue("start", out object? start) && start != null ? start.ToString() : null;

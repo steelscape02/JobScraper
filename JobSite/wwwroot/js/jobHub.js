@@ -21,9 +21,12 @@ connection.on("ReceiveAdd", function (job) {
 
     tr.setAttribute("id", job.id); 
 
-    var titleCell = document.createElement("td");
-    titleCell.textContent = job.title;
-    tr.appendChild(titleCell);
+    const link = document.createElement('a');
+    link.href = job.url;
+    link.textContent = job.title;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    tr.appendChild(link);
 
     var companyCell = document.createElement("td");
     companyCell.textContent = job.company;
@@ -75,7 +78,12 @@ connection.on("ReceiveUpdate", function (job) {
     for (var i = 0; i < rows.length; i++) {
         var row = rows[i]
         if (row.id === job.id) {
-            row.cells[0].textContent = job.title;
+            const link = document.createElement('a');
+            link.href = job.url;
+            link.textContent = job.title;
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            row.cells[0].appendChild(link);
             row.cells[1].textContent = job.company;
             row.cells[2].textContent = job.location;
             row.cells[3].textContent = job.wage;

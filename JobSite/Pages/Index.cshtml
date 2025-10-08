@@ -16,19 +16,17 @@
                     <th>Location</th>
                     <th>Wage</th>
                     <th>Date Posted</th>
-                    <th>Link</th>
                 </tr>
             </thead>
             <tbody id="tableBody">
                 @foreach (var row in Model.Jobs)
                 {
                     <tr id="@row.Id">
-                        <td>@row.Title</td>
+                        <td><a href="@row.Url" target="_blank" rel="noreferrer noopener">@row.Title</a></td>
                         <td>@row.Company</td>
                         <td>@row.Location</td>
                         <td>@row.Wage</td>
                         <td>@row.PostedOn</td>
-                        <td><a href="@row.Url" target="_blank">View Job</a></td>
                     </tr>
                 }
             </tbody>
