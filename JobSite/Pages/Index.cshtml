@@ -1,11 +1,11 @@
 ﻿@page  
 @model JobSite.Pages.IndexModel  
 @{  
-    ViewData["Title"] = "Home page";  
+    ViewData["Title"] = "Jobs";  
 }  
 
 <div class="text-center">  
-    <h1 class="display-4">Welcome</h1>
+    <h1 class="display-4">Current Job Listings</h1>
 
     <div style="max-height: 500px; overflow-y: auto;">
         <table>
@@ -20,7 +20,17 @@
                 </tr>
             </thead>
             <tbody id="tableBody">
-                
+                @foreach (var row in Model.Jobs)
+                {
+                    <tr id="@row.Id">
+                        <td>@row.Title</td>
+                        <td>@row.Company</td>
+                        <td>@row.Location</td>
+                        <td>@row.Wage</td>
+                        <td>@row.PostedOn</td>
+                        <td><a href="@row.Url" target="_blank">View Job</a></td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>
