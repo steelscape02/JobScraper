@@ -1,7 +1,5 @@
 ﻿"use strict";
 
-const delay = ms => new Promise(res => setTimeout(res, ms));
-
 const connection = new signalR.HubConnectionBuilder()
     .withUrl("/jobHub")
     .configureLogging(signalR.LogLevel.Information)

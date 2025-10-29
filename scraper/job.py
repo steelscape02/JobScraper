@@ -9,6 +9,7 @@ class Job:
     company : str | None = ""
     location = ""
     postedOn = ""
+    postedOnRaw = 0
     hours = ""
     wage = ""
     start = ""
@@ -33,6 +34,7 @@ class Job:
             'company' : self.company,
             'location' : self.location,
             'postedOn' : self.postedOn,
+            'postedOnRaw' : self.postedOnRaw,
             'hours' : self.hours,
             'wage' : self.wage,
             'start' : self.start,
@@ -53,6 +55,7 @@ class Job:
         self.company = str(d.get('company', ""))
         self.location = str(d.get('location', ""))
         self.postedOn = str(d.get('postedOn', ""))
+        self.postedOnRaw = int(d.get('postedOnRaw', 0))
         self.hours = str(d.get('hours', ""))
         self.wage = str(d.get('wage', ""))
         self.start = str(d.get('start', ""))

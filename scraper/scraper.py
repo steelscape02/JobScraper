@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import re
 from job import Job 
 from store import Store
+from datetime import datetime
 
 class ListScraper:
     local = []
@@ -56,6 +57,8 @@ class ListScraper:
             posted_date_element = soup.find(class_="ArticlePage-datePublished")
             if posted_date_element:
                 job.postedOn = posted_date_element.text.strip()
+                dt = datetime.strptime(posted_date_element.text.strip(), "%B %d, %Y").replace(tzinfo=timezone.utc)
+                job.postedOnRaw = int(dt.timestamp())
 
             headers = soup.find_all(class_="RichTextArticleBody")
 
