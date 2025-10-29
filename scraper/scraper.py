@@ -56,9 +56,14 @@ class ListScraper:
 
             posted_date_element = soup.find(class_="ArticlePage-datePublished")
             if posted_date_element:
-                job.postedOn = posted_date_element.text.strip()
-                dt = datetime.strptime(posted_date_element.text.strip(), "%B %d, %Y").replace(tzinfo=timezone.utc)
-                job.postedOnRaw = int(dt.timestamp())
+                date = posted_date_element.text.strip()
+                #check that date exists
+                job.postedOn = date if len(date) > 0 else "N/A"
+                try:
+                    dt = datetime.strptime(date, "%B %d, %Y").replace(tzinfo=timezone.utc)
+                    job.postedOnRaw = int(dt.timestamp())
+                except ValueError:
+                    job.postedOnRaw = 0
 
             headers = soup.find_all(class_="RichTextArticleBody")
 
