@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import re
 from job import Job 
 from store import Store
-from datetime import datetime
+from datetime import datetime, timezone
 
 class ListScraper:
     local = []
