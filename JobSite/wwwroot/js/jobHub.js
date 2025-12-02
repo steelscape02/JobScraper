@@ -6,7 +6,8 @@ const connection = new signalR.HubConnectionBuilder()
     .withAutomaticReconnect()
     .build();
 
-
+var minDate = Infinity;
+var maxDate = -Infinity;
 //TODO: refresh button?
 connection.on("ReceiveAdd", function (job) {
     var tableBody = document.getElementById("tableBody");
@@ -40,7 +41,10 @@ connection.on("ReceiveAdd", function (job) {
 
     var dateCell = document.createElement("td");
     dateCell.textContent = job.postedOn;
+    dateCell.id = job.postedOnRaw;
     tr.appendChild(dateCell);
+    minDate = Math.min(minDate, job.postedOnRaw);
+    maxDate = Math.max(maxDate, job.postedOnRaw);
 
     tableBody.appendChild(tr);
 });
@@ -86,10 +90,57 @@ connection.on("ReceiveUpdate", function (job) {
             row.cells[2].textContent = job.location;
             row.cells[3].textContent = job.wage;
             row.cells[4].textContent = job.postedOn;
+            row.cells[4].id          = job.postedOnRaw;
             break;
         }
     }
 });
+
+function sortTableDown() {
+    var table, rows, cont, i, x, y, shouldSwitch;
+    table = document.getElementById("tableBody");
+    cont = true;
+    while (cont) {
+        cont = false;
+        rows = table.rows;
+        for (i = 1; i < (rows.length - 1); i++) {
+            shouldSwitch = false;
+            x = rows[i][4].id;
+            y = rows[i + 1][4].id;
+            if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                shouldSwitch = true;
+                break;
+            }
+        }
+        if (shouldSwitch) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            cont = true;
+        }
+    }
+}
+
+function sortTableUp() {
+    var table, rows, cont, i, x, y, shouldSwitch;
+    table = document.getElementById("myTable");
+    cont = true;
+    while (cont) {
+        cont = false;
+        rows = table.rows;
+        for (i = 1; i < (rows.length - 1); i++) {
+            shouldSwitch = false;
+            x = rows[i][4].id;
+            y = rows[i+1][4].id;
+            if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                shouldSwitch = true;
+                break;
+            }
+        }
+        if (shouldSwitch) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            cont = true;
+        }
+    }
+}
 
 async function start() {
     try {

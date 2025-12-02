@@ -13,6 +13,7 @@
         public string? Company { get; set; }
         public string? Location { get; set; }
         public string? PostedOn { get; set; }
+        public string? PostedOnRaw { get; set; }
         public string? Hours { get; set; }
         public string? Wage { get; set; }
         public string? Start { get; set; }

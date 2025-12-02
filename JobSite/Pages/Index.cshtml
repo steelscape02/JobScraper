@@ -3,24 +3,26 @@
 @{  
     ViewData["Title"] = "Jobs";  
 }  
+<link href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.css" rel="stylesheet" />
+
 
 <div class="text-center">  
     <h1 class="display-4">Current Job Listings</h1>
-    <div class="wageContainer">
-        <input type="range" min="1" max="100" value="50" class="slider" id="wageRange">
+    <div class ="buttonDiv">
+        <button name="Filters" title="Filter Menu">Filters</button>
     </div>
-    <div class="dateContainer">
-        <input type="range" min="1" max="100" value="50" class="slider" id="dateRange">
-    </div>
+    
     <div style="max-height: 500px; overflow-y: auto;">
         <table>
             <thead>
                 <tr>  
-                    <th>Job Title</th>
-                    <th>Company</th>
-                    <th>Location</th>
-                    <th>Wage</th>
-                    <th>Date Posted</th>
+                    <!-- Down Arrow: &darr; -->
+                    <!-- Up Arrow:   &uarr; -->
+                    <th>Job Title   <button type="button">-</button> </th>
+                    <th>Company     <button type="button">-</button> </th>
+                    <th>Location    <button type="button">-</button> </th>
+                    <th>Wage        <button type="button">-</button> </th>
+                    <th>Date Posted <button type="button">-</button> </th>
                 </tr>
             </thead>
             <tbody id="tableBody">
@@ -31,7 +33,7 @@
                         <td>@row.Company</td>
                         <td>@row.Location</td>
                         <td>@row.Wage</td>
-                        <td>@row.PostedOn</td>
+                        <td id=@row.PostedOnRaw>@row.PostedOn</td> <!-- Provide epoch for simpler time comparison -->
                     </tr>
                 }
             </tbody>
@@ -41,3 +43,9 @@
 
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
 <script src="~/js/jobHub.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.js"></script>
+
+<script>
+    
+</script>
+

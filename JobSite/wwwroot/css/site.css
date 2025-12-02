@@ -20,3 +20,13 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+th {
+    background: white;
+    position: sticky;
+    top: 0;
+}
+
+.buttonDiv {
+    text-align: right;
+}
