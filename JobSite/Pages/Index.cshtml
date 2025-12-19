@@ -1,15 +1,15 @@
 ﻿@page  
+@using System.Diagnostics
 @model JobSite.Pages.IndexModel  
 @{  
     ViewData["Title"] = "Jobs";  
 }  
 <link href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.css" rel="stylesheet" />
 
-
 <div class="text-center">  
     <h1 class="display-4">Current Job Listings</h1>
-    <div class ="buttonDiv">
-        <button name="Filters" title="Filter Menu">Filters</button>
+    <div class ="asp:ButtonDiv">
+        <asp:Button name="Filters" title="Filter Menu">Filters</asp:Button>
     </div>
     
     <div style="max-height: 500px; overflow-y: auto;">
@@ -18,11 +18,22 @@
                 <tr>  
                     <!-- Down Arrow: &darr; -->
                     <!-- Up Arrow:   &uarr; -->
-                    <th>Job Title   <button type="button">-</button> </th>
-                    <th>Company     <button type="button">-</button> </th>
-                    <th>Location    <button type="button">-</button> </th>
-                    <th>Wage        <button type="button">-</button> </th>
-                    <th>Date Posted <button type="button">-</button> </th>
+                    
+                    <th>Job Title
+                        <asp:Button id="titleFilter" runat="server" type="button" >-</asp:Button>
+                    </th>
+                    <th>Company
+                        <asp:Button id="companyFilter" runat="server" type="button">-</asp:Button>
+                    </th>
+                    <th>Location
+                        <asp:Button id="locationFilter" runat="server" type="button">-</asp:Button>
+                    </th>
+                    <th>Wage
+                        <asp:Button id="wageFilter" runat="server" type="button">-</asp:Button>
+                    </th>
+                    <th>Date Posted
+                        <asp:Button id="postedFilter" runat="server" type="button">-</asp:Button>
+                    </th>
                 </tr>
             </thead>
             <tbody id="tableBody">
@@ -44,8 +55,3 @@
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
 <script src="~/js/jobHub.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.js"></script>
-
-<script>
-    
-</script>
-

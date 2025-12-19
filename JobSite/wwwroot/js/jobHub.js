@@ -96,7 +96,47 @@ connection.on("ReceiveUpdate", function (job) {
     }
 });
 
-function sortTableDown() {
+document.addEventListener('DOMContentLoaded', function () {
+    //var titleFilter = document.querySelector('titleFilter');
+
+    if (titleFilter) {
+        titleFilter.addEventListener('click', function (e) {
+            console.log("Uhhh");
+        });
+    } else {
+        console.log("error state reached for titleFilter");
+    }
+    if (companyFilter) {
+        companyFilter.addEventListener('click', function (e) {
+            console.log("Uhhh #2");
+        });
+    } else {
+        console.log("error state reached for companyFilter");
+    }
+    if (locationFilter) {
+        locationFilter.addEventListener('click', function (e) {
+            console.log("Uhhh #3");
+        });
+    } else {
+        console.log("error state reached for locationFilter");
+    }
+    if (wageFilter) {
+        wageFilter.addEventListener('click', function (e) {
+            console.log("Uhhh #4");
+        });
+    } else {
+        console.log("error state reached for wageFilter");
+    }
+    if (postedFilter) {
+        postedFilter.addEventListener('click', function (e) {
+            console.log("Uhhh #5");
+        });
+    } else {
+        console.log("error state reached for postedFilter");
+    }
+});
+
+function sortTableDown(column = 1) {
     var table, rows, cont, i, x, y, shouldSwitch;
     table = document.getElementById("tableBody");
     cont = true;
@@ -105,8 +145,8 @@ function sortTableDown() {
         rows = table.rows;
         for (i = 1; i < (rows.length - 1); i++) {
             shouldSwitch = false;
-            x = rows[i][4].id;
-            y = rows[i + 1][4].id;
+            x = rows[i][column].id;
+            y = rows[i + 1][column].id;
             if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
                 shouldSwitch = true;
                 break;
@@ -119,7 +159,7 @@ function sortTableDown() {
     }
 }
 
-function sortTableUp() {
+function sortTableUp(column = 1) {
     var table, rows, cont, i, x, y, shouldSwitch;
     table = document.getElementById("myTable");
     cont = true;
@@ -128,8 +168,8 @@ function sortTableUp() {
         rows = table.rows;
         for (i = 1; i < (rows.length - 1); i++) {
             shouldSwitch = false;
-            x = rows[i][4].id;
-            y = rows[i+1][4].id;
+            x = rows[i][column].id;
+            y = rows[i+1][column].id;
             if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
                 shouldSwitch = true;
                 break;

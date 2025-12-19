@@ -1,6 +1,7 @@
 using Google.Cloud.Firestore;
 using JobSite.Models;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Diagnostics;
 using System.Text.Json.Nodes;
 
 namespace JobSite.Pages
@@ -8,7 +9,6 @@ namespace JobSite.Pages
     public class IndexModel : PageModel
     {
         private readonly ILogger<IndexModel> _logger;
-
         public IndexModel(ILogger<IndexModel> logger)
         {
             _logger = logger;
@@ -47,6 +47,10 @@ namespace JobSite.Pages
 
         public void OnCleanup()
         {
+        }
+        public void OnPost()
+        {
+            Debug.WriteLine("Form Posted");
         }
     }
 }
