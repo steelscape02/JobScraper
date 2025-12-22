@@ -1,5 +1,11 @@
 ﻿"use strict";
 
+const SORT_TYPE = {
+    STR = "string",
+    DATE = "date",
+    WAGE = "wage"
+}
+
 const connection = new signalR.HubConnectionBuilder()
     .withUrl("/jobHub")
     .configureLogging(signalR.LogLevel.Information)
@@ -37,6 +43,7 @@ connection.on("ReceiveAdd", function (job) {
 
     var wageCell = document.createElement("td");
     wageCell.textContent = job.wage;
+    //TODO: Add filtered wage
     tr.appendChild(wageCell);
 
     var dateCell = document.createElement("td");
@@ -67,7 +74,6 @@ connection.on("ReceiveRemove", function (jobId) {
             break;
         }
     }
-    console.log("removedTEST: " + removedTEST);
 });
 
 connection.on("ReceiveUpdate", function (job) {
@@ -97,89 +103,188 @@ connection.on("ReceiveUpdate", function (job) {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
-    //var titleFilter = document.querySelector('titleFilter');
+    /* Filter Type (FType) States
+    
+    0 - None
+    1 - Ascending
+    2 - Descending
+    */
 
-    if (titleFilter) {
+    var titleFType = 0;
+    var companyFType = 0;
+    var locationFType = 0; //TODO: Location API not implemented
+    var wageFType = 0;
+    var postedFType = 0;
+
+
+    if (titleFilter) { //Col 0
         titleFilter.addEventListener('click', function (e) {
-            console.log("Uhhh");
+            console.log("title temp print")
+            //increment type or reset
+            if (titleFType >= 2) {
+                titleFType = 0;
+            }
+            titleFType += 1;
+            console.log(titleFType)
+            //evaluate sorting action
+            switch (titleFType) {
+                case 1:
+                    sortTableUp(0,SORT_TYPE.STR);
+                    break;
+                case 2:
+                    sortTableDown(0,SORT_TYPE.STR);
+                    break;
+                default:
+                    console.error("titleFType - Invalid Value Reached" + titleFType);
+                    break;
+            }
         });
     } else {
         console.log("error state reached for titleFilter");
     }
-    if (companyFilter) {
+    if (companyFilter) { //Col 1
         companyFilter.addEventListener('click', function (e) {
-            console.log("Uhhh #2");
+            console.log("company temp print")
+            //increment type or reset
+            if (companyFType >= 2) {
+                companyFType = 0;
+            }
+            companyFType += 1;
+
+            //evaluate sorting action
+            switch (companyFType) {
+                case 1:
+                    sortTableUp(1, SORT_TYPE.STR);
+                    break;
+                case 2:
+                    sortTableDown(1, SORT_TYPE.STR);
+                    break;
+                default:
+                    console.error("companyFType - Invalid Value Reached");
+                    break;
+            }
         });
     } else {
         console.log("error state reached for companyFilter");
     }
-    if (locationFilter) {
+    if (locationFilter) { //Col 2
         locationFilter.addEventListener('click', function (e) {
-            console.log("Uhhh #3");
+            //TODO: location api
         });
     } else {
         console.log("error state reached for locationFilter");
     }
-    if (wageFilter) {
+    if (wageFilter) { //Col 3
         wageFilter.addEventListener('click', function (e) {
-            console.log("Uhhh #4");
+            console.log("Wage temp print")
+            //increment type or reset
+            if (wageFType >= 2) {
+                wageFType = 0;
+            }
+            wageFType += 1;
+
+            //evaluate sorting action
+            switch (wageFType) {
+                case 1:
+                    sortTableUp(3, SORT_TYPE.STR); //TODO: TEMP
+                    break;
+                case 2:
+                    sortTableDown(3, SORT_TYPE.STR); //TODO: TEMP
+                    break;
+                default:
+                    console.error("wageFType - Invalid Value Reached");
+                    break;
+            }
         });
     } else {
         console.log("error state reached for wageFilter");
     }
-    if (postedFilter) {
+    if (postedFilter) { //Col 4
         postedFilter.addEventListener('click', function (e) {
-            console.log("Uhhh #5");
+            console.log("Posted temp print")
+            //increment type or reset
+            if (postedFType == 2) {
+                postedFType = 0;
+            }
+            postedFType += 1;
+
+            //evaluate sorting action
+            switch (postedFType) {
+                case 1:
+                    sortTableUp(4, SORT_TYPE.DATE);
+                    break;
+                case 2:
+                    sortTableDown(4, SORT_TYPE.DATE);
+                    break;
+                default:
+                    console.error("postedFType - Invalid Value Reached");
+                    break;
+            }
         });
     } else {
         console.log("error state reached for postedFilter");
     }
 });
 
-function sortTableDown(column = 1) {
-    var table, rows, cont, i, x, y, shouldSwitch;
+function sortTableDown(column = 0,type) {
+    var table, rows;
     table = document.getElementById("tableBody");
-    cont = true;
-    while (cont) {
-        cont = false;
-        rows = table.rows;
-        for (i = 1; i < (rows.length - 1); i++) {
-            shouldSwitch = false;
-            x = rows[i][column].id;
-            y = rows[i + 1][column].id;
-            if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-                shouldSwitch = true;
-                break;
-            }
+
+    rows = Array.from(table.querySelectorAll('tr'));
+    rows.sort((a, b) => {
+        switch (type) {
+            case SORT_TYPE.STR:
+                const aValue = a.cells[column].textContent;
+                const bValue = b.cells[column].textContent;
+                return bValue.localeCompare(aValue);
+            case SORT_TYPE.DATE:
+                const aValue = a.cells[column].id;
+                const bValue = b.cells[column].id;
+                return bValue - aValue;
+            case SORT_TYPE.WAGE:
+                //TODO: add sort once ready
+                return null;
+            default:
+                return null;
         }
-        if (shouldSwitch) {
-            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-            cont = true;
+    });
+
+    rows.forEach(row => {
+        if (row != null) {
+            table.appendChild(row);
         }
-    }
+    });
+    console.log("sort dn done");
+    //rows.forEach(row => table.querySelector('tableBody').appendChild(row));
 }
 
-function sortTableUp(column = 1) {
-    var table, rows, cont, i, x, y, shouldSwitch;
-    table = document.getElementById("myTable");
-    cont = true;
-    while (cont) {
-        cont = false;
-        rows = table.rows;
-        for (i = 1; i < (rows.length - 1); i++) {
-            shouldSwitch = false;
-            x = rows[i][column].id;
-            y = rows[i+1][column].id;
-            if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-                shouldSwitch = true;
-                break;
-            }
+function sortTableUp(column = 0, type) {
+    var table, rows;
+    table = document.getElementById("tableBody");
+    rows = Array.from(table.querySelectorAll('tr'));
+    rows.sort((a, b) => {
+        switch (type) {
+            case SORT_TYPE.STR:
+                const aValue = a.cells[column].textContent;
+                const bValue = b.cells[column].textContent;
+                return aValue.localeCompare(bValue);
+            case SORT_TYPE.DATE:
+                const aValue = a.cells[column].id;
+                const bValue = b.cells[column].id;
+                return aValue - bValue;
+            case SORT_TYPE.WAGE:
+                //TODO: add sort once ready
+                return null;
+            default:
+                return null;
         }
-        if (shouldSwitch) {
-            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-            cont = true;
+    });
+    rows.forEach(row => {
+        if (row != null) {
+            table.appendChild(row);
         }
-    }
+    });
+    console.log("sort up done");
 }
 
 async function start() {
