@@ -91,13 +91,19 @@ class ListScraper:
                 job.wage = ListScraper._extract_wage(header_text)
                 if not job.wage:
                     job.wage = ListScraper._extract_wage_advanced(header_text)
-                x = re.findall(r'\d+|\.', job.wage.strip())
+                x = re.findall(r'[\d,\.]+(?<=\d)', job.wage.strip())
                 # print(type(x))
                 try:
                     x = [item.replace(',', '') for item in x]
                     wages = [float(item) for item in x]
                     
-                    if len(wages) >= 1:
+                    if "email" in job.wage.lower():
+                        job.wageRaw = 0.0
+                    elif "call" in job.wage.lower():
+                        job.wageRaw = 0.0
+                    elif "text" in job.wage.lower():
+                        job.wageRaw = 0.0
+                    elif len(wages) >= 1:
                         job.wageRaw = sum(wages) / len(wages)
                     else:
                         job.wageRaw = float(x[0]) if x else 0.0
