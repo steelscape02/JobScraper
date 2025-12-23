@@ -113,7 +113,6 @@ connection.on("ReceiveUpdate", function (job) {
 
 document.addEventListener('DOMContentLoaded', function () {
     /* Filter Type (FType) States
-    
     0 - None
     1 - Ascending
     2 - Descending
@@ -246,7 +245,6 @@ function sortTableDown(column = 0,type) {
             case SORT_TYPE.DATE:
                 var aValue = a.cells[column].id;
                 var bValue = b.cells[column].id;
-                console.log("a: " + aValue + " b: " + bValue);
                 return bValue - aValue;
             default:
                 return null;
