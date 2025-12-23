@@ -16,6 +16,7 @@
         public string? PostedOnRaw { get; set; }
         public string? Hours { get; set; }
         public string? Wage { get; set; }
+        public string? WageRaw { get; set; }
         public string? Start { get; set; }
         public string? Duration { get; set; }
         public string? Apply { get; set; }
@@ -35,8 +36,10 @@
             Company = dict.TryGetValue("company", out object? company) && company != null ? company.ToString() : null;
             Location = dict.TryGetValue("location", out object? location) && location != null ? location.ToString() : null;
             PostedOn = dict.TryGetValue("postedOn", out object? posted_on) && posted_on != null ? posted_on.ToString() : null;
+            PostedOnRaw = dict.TryGetValue("postedOnRaw", out object? posted_on_raw) && posted_on_raw != null ? posted_on_raw.ToString() : null;
             Hours = dict.TryGetValue("hours", out object? hours) && hours != null ? hours.ToString() : null;
             Wage = dict.TryGetValue("wage", out object? wage) && wage != null ? wage.ToString() : null;
+            WageRaw = dict.TryGetValue("wageRaw", out object? wage_raw) && wage_raw != null ? wage_raw.ToString() : null;
             Start = dict.TryGetValue("start", out object? start) && start != null ? start.ToString() : null;
             Duration = dict.TryGetValue("duration", out object? duration) && duration != null ? duration.ToString() : null;
             Apply = dict.TryGetValue("apply", out object? apply) && apply != null ? apply.ToString() : null;

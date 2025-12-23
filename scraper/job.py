@@ -12,6 +12,7 @@ class Job:
     postedOnRaw = 0
     hours = ""
     wage = ""
+    wageRaw = 0.0
     start = ""
     duration = ""
     apply = ""
@@ -37,6 +38,7 @@ class Job:
             'postedOnRaw' : self.postedOnRaw,
             'hours' : self.hours,
             'wage' : self.wage,
+            'wageRaw' : self.wageRaw,
             'start' : self.start,
             'duration' : self.duration,
             'apply' : self.apply,
@@ -58,6 +60,7 @@ class Job:
         self.postedOnRaw = int(d.get('postedOnRaw', 0))
         self.hours = str(d.get('hours', ""))
         self.wage = str(d.get('wage', ""))
+        self.wageRaw = str(d.get('wageRaw', ""))
         self.start = str(d.get('start', ""))
         self.duration = str(d.get('duration', ""))
         self.apply = str(d.get('apply', ""))

@@ -1,10 +1,10 @@
 ﻿"use strict";
 
 const SORT_TYPE = {
-    STR = "string",
-    DATE = "date",
-    WAGE = "wage"
-}
+    STR: "STR",
+    DATE: "DATE",
+    WAGE: "WAGE"
+};
 
 const connection = new signalR.HubConnectionBuilder()
     .withUrl("/jobHub")
@@ -14,6 +14,8 @@ const connection = new signalR.HubConnectionBuilder()
 
 var minDate = Infinity;
 var maxDate = -Infinity;
+var minWage = Infinity;
+var maxWage = -Infinity;
 //TODO: refresh button?
 connection.on("ReceiveAdd", function (job) {
     var tableBody = document.getElementById("tableBody");
@@ -43,8 +45,10 @@ connection.on("ReceiveAdd", function (job) {
 
     var wageCell = document.createElement("td");
     wageCell.textContent = job.wage;
-    //TODO: Add filtered wage
+    wageCell.id = job.wageRaw;
     tr.appendChild(wageCell);
+    minWage = Math.min(minWage, job.wageRaw);
+    maxWage = Math.max(maxWage, job.wageRaw);
 
     var dateCell = document.createElement("td");
     dateCell.textContent = job.postedOn;
@@ -95,8 +99,13 @@ connection.on("ReceiveUpdate", function (job) {
             row.cells[1].textContent = job.company;
             row.cells[2].textContent = job.location;
             row.cells[3].textContent = job.wage;
+            row.cells[3].id          = job.wageRaw;
+            minWage                  = Math.min(minWage, job.wageRaw);
+            maxWage                  = Math.max(maxWage, job.wageRaw);
             row.cells[4].textContent = job.postedOn;
             row.cells[4].id          = job.postedOnRaw;
+            minDate                  = Math.min(minDate, job.postedOnRaw);
+            maxDate                  = Math.max(maxDate, job.postedOnRaw);
             break;
         }
     }
@@ -119,7 +128,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (titleFilter) { //Col 0
         titleFilter.addEventListener('click', function (e) {
-            console.log("title temp print")
             //increment type or reset
             if (titleFType >= 2) {
                 titleFType = 0;
@@ -144,7 +152,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     if (companyFilter) { //Col 1
         companyFilter.addEventListener('click', function (e) {
-            console.log("company temp print")
             //increment type or reset
             if (companyFType >= 2) {
                 companyFType = 0;
@@ -176,7 +183,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     if (wageFilter) { //Col 3
         wageFilter.addEventListener('click', function (e) {
-            console.log("Wage temp print")
             //increment type or reset
             if (wageFType >= 2) {
                 wageFType = 0;
@@ -186,10 +192,10 @@ document.addEventListener('DOMContentLoaded', function () {
             //evaluate sorting action
             switch (wageFType) {
                 case 1:
-                    sortTableUp(3, SORT_TYPE.STR); //TODO: TEMP
+                    sortTableUp(3, SORT_TYPE.WAGE);
                     break;
                 case 2:
-                    sortTableDown(3, SORT_TYPE.STR); //TODO: TEMP
+                    sortTableDown(3, SORT_TYPE.WAGE);
                     break;
                 default:
                     console.error("wageFType - Invalid Value Reached");
@@ -201,7 +207,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     if (postedFilter) { //Col 4
         postedFilter.addEventListener('click', function (e) {
-            console.log("Posted temp print")
             //increment type or reset
             if (postedFType == 2) {
                 postedFType = 0;
@@ -234,16 +239,15 @@ function sortTableDown(column = 0,type) {
     rows.sort((a, b) => {
         switch (type) {
             case SORT_TYPE.STR:
-                const aValue = a.cells[column].textContent;
-                const bValue = b.cells[column].textContent;
+                var aValue = a.cells[column].textContent;
+                var bValue = b.cells[column].textContent;
                 return bValue.localeCompare(aValue);
-            case SORT_TYPE.DATE:
-                const aValue = a.cells[column].id;
-                const bValue = b.cells[column].id;
-                return bValue - aValue;
             case SORT_TYPE.WAGE:
-                //TODO: add sort once ready
-                return null;
+            case SORT_TYPE.DATE:
+                var aValue = a.cells[column].id;
+                var bValue = b.cells[column].id;
+                console.log("a: " + aValue + " b: " + bValue);
+                return bValue - aValue;
             default:
                 return null;
         }
@@ -254,8 +258,6 @@ function sortTableDown(column = 0,type) {
             table.appendChild(row);
         }
     });
-    console.log("sort dn done");
-    //rows.forEach(row => table.querySelector('tableBody').appendChild(row));
 }
 
 function sortTableUp(column = 0, type) {
@@ -265,16 +267,15 @@ function sortTableUp(column = 0, type) {
     rows.sort((a, b) => {
         switch (type) {
             case SORT_TYPE.STR:
-                const aValue = a.cells[column].textContent;
-                const bValue = b.cells[column].textContent;
+                var aValue = a.cells[column].textContent;
+                var bValue = b.cells[column].textContent;
                 return aValue.localeCompare(bValue);
-            case SORT_TYPE.DATE:
-                const aValue = a.cells[column].id;
-                const bValue = b.cells[column].id;
-                return aValue - bValue;
             case SORT_TYPE.WAGE:
-                //TODO: add sort once ready
-                return null;
+            case SORT_TYPE.DATE:
+                var aValue = a.cells[column].id;
+                var bValue = b.cells[column].id;
+                return aValue - bValue;
+            
             default:
                 return null;
         }
@@ -284,7 +285,6 @@ function sortTableUp(column = 0, type) {
             table.appendChild(row);
         }
     });
-    console.log("sort up done");
 }
 
 async function start() {

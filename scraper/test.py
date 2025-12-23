@@ -1,14 +1,10 @@
-import firebase_admin
-from firebase_admin import firestore
-from scraper import Job #type: ignore
+import re
 
-# Application Default credentials are automatically created.
-
-PROJECT_ID = "job-scraper-5a9d0"  # Replace with your actual project ID
-app = firebase_admin.initialize_app(options={'projectId': PROJECT_ID})
-db = firestore.client()
-
-thing = Job("https:\\\\example.com\\job1")
-col = db.collection("jobs_list")
-
-col.document(thing.url).set(thing.to_dict())
+wage_test = "Starts at $859.00 for the season. pay based on experience"
+def parse_wage(wage_str: str) -> float:
+    x = re.findall(r'\d+|\.', wage_str)
+    if len(x) > 1:
+        avg = sum(x) / len(x)
+        return avg
+    else:
+        return float(x[0]) if x else 0.0
