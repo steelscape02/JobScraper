@@ -73,26 +73,18 @@ class ListScraper:
                 job.title = ListScraper._extract_title(header_text)
                 if job.title == "Job Title Name":
                     continue
-
                 job.description = ListScraper._extract_description(header_text)
                 job.requirements = ListScraper._extract_requirements(header_text)
-                if not job.requirements:
-                    job.requirements = ListScraper._extract_requirements_advanced(header_text)
-
                 job.contact = ListScraper._extract_contact_name(header_text)
                 job.phone = ListScraper._extract_phone(header_text)
                 job.email = ListScraper._extract_email(header_text)
                 job.company = ListScraper._extract_company_name(header_text)
                 job.location = ListScraper._extract_address(header_text)
-                if not job.location:
-                    job.location = ListScraper._extract_address_advanced(header_text)
-
                 job.hours = ListScraper._extract_hours(header_text)
+
                 job.wage = ListScraper._extract_wage(header_text)
-                if not job.wage:
-                    job.wage = ListScraper._extract_wage_advanced(header_text)
                 x = re.findall(r'[\d,\.]+(?<=\d)', job.wage.strip())
-                # print(type(x))
+
                 try:
                     x = [item.replace(',', '') for item in x]
                     wages = [float(item) for item in x]
@@ -112,14 +104,9 @@ class ListScraper:
 
                 job.start = ListScraper._extract_start(header_text)
                 job.duration = ListScraper._extract_duration(header_text)
-                if not job.duration:
-                    job.duration = ListScraper._extract_duration_advanced(header_text)
-
                 job.apply = ListScraper._extract_apply(header_text)
                 job.deadline = ListScraper._extract_deadline(header_text)
                 job.comments = ListScraper._extract_comments(header_text)
-                if not job.comments:
-                    job.comments = ListScraper._extract_comments_advanced(header_text)
 
                 store.update(job)
                 return job.id
@@ -131,129 +118,90 @@ class ListScraper:
 
     @staticmethod
     def _extract_contact_name(input_string):
-        regex = r"Contact Name\s*([\s\S]*?)\s*Company"
+        regex = r"Contact Name(.*?)(?=Company)"
         match = re.search(regex, input_string)
         return match.group(1).strip() if match else None
 
     @staticmethod
     def _extract_company_name(input_string):
-        regex = r"Company\s*([\s\S]*?)\s*Contact Phone Number"
+        regex = r"Company(.*?)(?=(Contact|Address))"
         match = re.search(regex, input_string)
         return match.group(1).strip() if match else None
 
     @staticmethod
     def _extract_phone(input_string):
-        regex = r"Contact Phone Number\s*([\s\S]*?)\s*Address"
+        regex = r"Contact Phone Number(.*?)(?=Address)"
         match = re.search(regex, input_string)
         return match.group(1).strip() if match else ""
 
     @staticmethod
     def _extract_address(input_string):
-        regex = r"Address\s*(.*?)\s*Email Address"
+        regex = r"(Address|State)(.*?)(?=Email Address)"
         match = re.search(regex, input_string)
-        if match:
-            value = match.group(1).strip()
-            index = value.find(", City, State")
-            if index >= 0:
-                return value[:index].strip()
-            return value
-        return ""
-
-
-    @staticmethod
-    def _extract_address_advanced(input_string):
-        regex = r"Address, City, State\s*(.*?)\s*Email Address"
-        match = re.search(regex, input_string)
-        return match.group(1).strip() if match else ""
+        return match.group(2).strip() if match else ""
 
     @staticmethod
     def _extract_email(input_string):
-        regex = r"Email Address\s*([\s\S]*?)\s*Job Title"
+        regex = r"Email Address(.*?)(?=Job Title)"
         match = re.search(regex, input_string)
         return match.group(1).strip() if match else ""
 
     @staticmethod
     def _extract_title(input_string):
-        regex = r"Job Title\s*([\s\S]*?)\s*Job Description"
+        regex = r"Job Title(.*?)(?=Job Description)"
         match = re.search(regex, input_string)
         return match.group(1).strip() if match else ""
 
     @staticmethod
     def _extract_description(input_string):
-        regex = r"Job Description\s*([\s\S]*?)\s*Requirements"
+        regex = r"Job Description(.*?)(?=Requirements)"
         match = re.search(regex, input_string)
         return match.group(1).strip() if match else ""
 
     @staticmethod
     def _extract_requirements(input_string):
-        regex = r"Requirements/Qualifications\s*(.*?)\s*Start Date"
+        regex = r"Requirements(/|\s/\s)Qualifications(.*?)(?=Start Date)"
         match = re.search(regex, input_string)
-        return match.group(1).strip() if match else ""
-
-    @staticmethod
-    def _extract_requirements_advanced(input_string):
-        regex = r"Requirements / Qualifications\s*(.*?)\s*Start Date"
-        match = re.search(regex, input_string)
-        return match.group(1).strip() if match else ""
-
+        return match.group(2).strip() if match else ""
+    
     @staticmethod
     def _extract_start(input_string):
-        regex = r"Start Date\s*([\s\S]*?)\s*Duration"
+        regex = r"Start Date(.*?)(?=Duration)"
         match = re.search(regex, input_string)
         return match.group(1).strip() if match else ""
 
     @staticmethod
     def _extract_duration(input_string):
-        regex = r"Duration/End Date\s*([\s\S]*?)\s*Hours"
+        regex = r"Duration(/|\s/\s)End Date(.*?)(?=Hours)"
         match = re.search(regex, input_string)
-        return match.group(1).strip() if match else ""
-
-    @staticmethod
-    def _extract_duration_advanced(input_string):
-        regex = r"Duration / End Date\s*([\s\S]*?)\s*Hours"
-        match = re.search(regex, input_string)
-        return match.group(1).strip() if match else ""
+        return match.group(2).strip() if match else ""
 
     @staticmethod
     def _extract_hours(input_string):
-        regex = r"Hours\s*([\s\S]*?)\s*Pay"
+        regex = r"Hours(.*?)(?=Pay)"
         match = re.search(regex, input_string)
         return match.group(1).strip() if match else ""
 
     @staticmethod
     def _extract_wage(input_string):
-        regex = r"Pay/Wage\s*([\s\S]*?)\s*How to Apply"
+        regex = r"Pay(/|\s/\s)Wage(.*?)(?=How to Apply)"
         match = re.search(regex, input_string)
-        return match.group(1).strip() if match else ""
-
-    @staticmethod
-    def _extract_wage_advanced(input_string):
-        regex = r"Pay / Wage\s*([\s\S]*?)\s*How to Apply"
-        match = re.search(regex, input_string)
-        return match.group(1).strip() if match else ""
+        return match.group(2).strip() if match else ""
 
     @staticmethod
     def _extract_apply(input_string):
-        regex = r"How to Apply\s*([\s\S]*?)\s*Application Deadline"
+        regex = r"How to Apply:(.*?)(?=Application Deadline)"
         match = re.search(regex, input_string)
         return match.group(1).strip() if match else ""
 
     @staticmethod
     def _extract_deadline(input_string):
-        regex = r"Application Deadline:\s*([\s\S]*?)\s*Other Questions"
+        regex = r"Application Deadline:(.*?)(?=Other Questions)"
         match = re.search(regex, input_string)
         return match.group(1).strip() if match else ""
 
     @staticmethod
     def _extract_comments(input_string):
-        # This one ends with $, so it's slightly different.
-        regex = r"Other Questions/Comments:\s*([\s\S]*)$"
+        regex = r"Other Questions(/|\s/\s)Comments:(.*?)(?=$)"
         match = re.search(regex, input_string)
-        return match.group(1).strip() if match else ""
-
-    @staticmethod
-    def _extract_comments_advanced(input_string):
-        # This one ends with $, so it's slightly different.
-        regex = r"Other Questions / Comments:\s*([\s\S]*)$"
-        match = re.search(regex, input_string)
-        return match.group(1).strip() if match else ""
+        return match.group(2).strip() if match else ""
