@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import re
 from job import Job 
 from store import Store
+from geocoding import Geocoding
 from datetime import datetime, timezone
 
 class ListScraper:
@@ -10,11 +11,11 @@ class ListScraper:
     BASE_URL = "https://www.byui.edu/help-wanted-postings"
 
     @staticmethod
-    async def scrape(store: Store):
-        await ListScraper.ScrapeAllJobs(store, ListScraper.BASE_URL)
+    async def scrape(store: Store, geocoder: Geocoding):
+        await ListScraper.ScrapeAllJobs(store, geocoder, ListScraper.BASE_URL)
 
     @staticmethod
-    async def ScrapeAllJobs(store : Store, base_url : str, ext : str =""):
+    async def ScrapeAllJobs(store : Store, geocoder: Geocoding, base_url : str, ext : str =""):
         
         try:
             full_url = base_url + ext
@@ -29,11 +30,11 @@ class ListScraper:
                 text = link.text.strip()
                 if "Get Involved" in text:
                     if (href != None) : 
-                        ListScraper.local.append(await ListScraper.ScrapeJob(store, href))
+                        ListScraper.local.append(await ListScraper.ScrapeJob(store, geocoder, href))
                 
                 elif "Next" in text: 
                     if (href != None): 
-                        await ListScraper.ScrapeAllJobs(store, base_url,href)
+                        await ListScraper.ScrapeAllJobs(store, geocoder, base_url,href)
                         return
             for job in store.fireDB.stream():
                 if job is not None and job.id not in ListScraper.local:
@@ -45,7 +46,7 @@ class ListScraper:
             print(f"An unexpected error occurred: {e}")
 
     @staticmethod
-    async def ScrapeJob(store, url) -> Job | None:
+    async def ScrapeJob(store, geocoder, url) -> Job | None:
         try:
             response = requests.get(url)
             response.raise_for_status()
@@ -80,6 +81,10 @@ class ListScraper:
                 job.email = ListScraper._extract_email(header_text)
                 job.company = ListScraper._extract_company_name(header_text)
                 job.location = ListScraper._extract_address(header_text)
+                geocoded = geocoder.geocode(job.location)
+                if geocoded:
+                    job.latitude, job.longitude = geocoded
+
                 job.hours = ListScraper._extract_hours(header_text)
 
                 job.wage = ListScraper._extract_wage(header_text)

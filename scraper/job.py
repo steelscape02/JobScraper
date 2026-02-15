@@ -8,6 +8,8 @@ class Job:
     email = ""
     company : str | None = ""
     location = ""
+    latitude : float | None = None
+    longitude : float | None = None
     postedOn = ""
     postedOnRaw = 0
     hours = ""
@@ -34,6 +36,8 @@ class Job:
             'email' : self.email,
             'company' : self.company,
             'location' : self.location,
+            'latitude' : self.latitude,
+            'longitude' : self.longitude,
             'postedOn' : self.postedOn,
             'postedOnRaw' : self.postedOnRaw,
             'hours' : self.hours,
@@ -56,6 +60,8 @@ class Job:
         self.email = str(d.get('email', ""))
         self.company = str(d.get('company', ""))
         self.location = str(d.get('location', ""))
+        self.latitude = float(d.get('latitude', 0.0))
+        self.longitude = float(d.get('longitude', 0.0))
         self.postedOn = str(d.get('postedOn', ""))
         self.postedOnRaw = int(d.get('postedOnRaw', 0))
         self.hours = str(d.get('hours', ""))
